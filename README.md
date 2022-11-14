@@ -81,3 +81,7 @@ g.edges
 """
 ```
 
+# More examples
+
+More examples and usages can be found in [test](/tests)
+
