@@ -34,7 +34,7 @@ path = pathfind.find(graph, start="4,0", end="0,0")
 graph.plot(trace=path)
 ```
 
-<img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/astar.png" alt="drawing" width="250"/>
+<img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/astar.png" alt="drawing" width="450"/>
 
 
 Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkstra").
@@ -46,7 +46,7 @@ path = pathfind.find(graph, start="4,0", end="0,0", method="bfs")
 graph.plot(trace=path)
 ```
 
-<img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/bfs.png" alt="drawing" width="250"/>
+<img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/bfs.png" alt="drawing" width="450"/>
 
 
 Set graph by hand.
@@ -61,7 +61,7 @@ graph = pathfind.Graph(conf)
 graph.plot()
 ```
 
-<img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/graph.png" alt="drawing" width="250"/>
+<img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/graph.png" alt="drawing" width="450"/>
 
 Or you can set edge's and node's details by following way：
 
