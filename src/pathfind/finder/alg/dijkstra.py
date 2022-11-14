@@ -10,7 +10,7 @@ class Dijkstra(BaseFinder):
     def check_neighbors(self, current: Node):
         for neighbor, cost in self.neighbors(current):
             new_cost = self.cost_to(current) + cost
-            if not self.in_cost_record(neighbor) or new_cost < self.cost_to(neighbor):
-                self.reset_cost_to(neighbor, new_cost)
+            if not self.is_discovered(neighbor) or new_cost < self.cost_to(neighbor):
+                self.discover(neighbor, new_cost)
                 self.frontier.put(neighbor, new_cost)
                 self.came_from[neighbor.name] = current

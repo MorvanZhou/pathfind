@@ -33,7 +33,7 @@ class BaseFinder(metaclass=ABCMeta):
         self.end = graph.nodes[end]
 
         self.frontier.put(self.start, 0)
-        self.reset_cost_to(self.start, 0)
+        self.discover(self.start, 0)
 
         while not self.frontier.empty():
             current: Node = self.frontier.get()
@@ -50,10 +50,12 @@ class BaseFinder(metaclass=ABCMeta):
     def cost_to(self, current: Node) -> float:
         return self._cost_so_far[current.name]
 
-    def reset_cost_to(self, node: Node, cost: float):
+    def discover(self, node: Node, cost: tp.Optional[float] = None):
+        if cost is None:
+            cost = -1
         self._cost_so_far[node.name] = cost
 
-    def in_cost_record(self, node: Node) -> bool:
+    def is_discovered(self, node: Node) -> bool:
         return node.name in self._cost_so_far
 
     @staticmethod

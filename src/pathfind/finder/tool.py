@@ -7,6 +7,7 @@ METHOD_MAP = {
     "bfs": alg.BFS,
     "greedy": alg.Greedy,
     "dijkstra": alg.Dijkstra,
+    "dfs": alg.DFS,
 }
 
 

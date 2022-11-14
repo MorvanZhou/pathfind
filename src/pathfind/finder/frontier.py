@@ -49,6 +49,15 @@ class FIFOFrontier(Frontier):
         self.q.clear()
 
 
+class FILOFrontier(FIFOFrontier):
+    def __init__(self):
+        super().__init__()
+        self.q = deque()
+
+    def get(self) -> Node:
+        return self.q.pop()
+
+
 class PriorityFrontier(Frontier):
     def __init__(self):
         super().__init__()

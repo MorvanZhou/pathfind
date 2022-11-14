@@ -2,6 +2,7 @@
 
 Implementation of path finding algorithms including:
 
+- Depth-First Search (DFS)
 - Breadth-First Search (BFS)
 - Dijkstra Search
 - Greedy Best-First Search
@@ -37,7 +38,7 @@ graph.plot(trace=path)
 <img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/astar.png" alt="drawing" width="450"/>
 
 
-Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkstra").
+Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkstra", "dfs").
 
 ```python
 path = pathfind.find(graph, start="4,0", end="0,0", method="bfs")
