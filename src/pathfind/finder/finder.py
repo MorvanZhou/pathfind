@@ -2,8 +2,9 @@ from __future__ import annotations
 import typing as tp
 from abc import ABCMeta, abstractmethod
 
+from pathfind.graph.graph import Graph, Node
+
 if tp.TYPE_CHECKING:
-    from pathfind.graph.graph import Graph, Node
     from pathfind.finder.frontier import Frontier
 
 
