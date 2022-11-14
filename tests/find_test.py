@@ -19,7 +19,7 @@ class FindTest(unittest.TestCase):
         g = pathfind.transform.matrix2graph(m)
 
         p = pathfind.find(g, "2,2", "0,2", "bfs")
-        g.plot(trace=p)
+        # g.plot(trace=p)
         self.assertEqual(['2,2', '2,1', '1,1', '0,1', '0,2'], p)
 
     def test_astar(self):
