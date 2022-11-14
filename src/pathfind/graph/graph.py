@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 import typing as tp
 
 import igraph as ig
 import matplotlib.pyplot as plt
 
-from pathfind.graph.node import Node
 from pathfind.graph.edge import Edge
+from pathfind.graph.node import Node
 
 
 class Graph:

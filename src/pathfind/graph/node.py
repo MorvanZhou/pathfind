@@ -1,6 +1,7 @@
 from __future__ import annotations
-import typing as tp
+
 import math
+import typing as tp
 from dataclasses import dataclass, field
 
 if tp.TYPE_CHECKING:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import typing as tp
 from abc import ABCMeta, abstractmethod
 
@@ -6,7 +7,6 @@ from pathfind.graph.graph import Graph, Node
 
 if tp.TYPE_CHECKING:
     from pathfind.finder.frontier import Frontier
-
 
 NodeTrace = tp.Dict[str, Node]
 GraphPath = tp.List[str]
@@ -16,7 +16,7 @@ class BaseFinder(metaclass=ABCMeta):
     def __init__(self, frontier: Frontier):
         self.frontier = frontier
         self._cost_so_far: tp.Dict[str, float] = {}
-        self.came_from: NodeTrace = {}      # key: node name, value: parent node
+        self.came_from: NodeTrace = {}  # key: node name, value: parent node
         self.start: tp.Optional[Node] = None
         self.end: tp.Optional[Node] = None
 

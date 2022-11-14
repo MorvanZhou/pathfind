@@ -28,7 +28,7 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]]) -> Graph:
     def add_edge(cell_pos, next_pos):
         cell_weight = matrix[cell_pos[0]][cell_pos[1]]
         next_weight = matrix[next_pos[0]][next_pos[1]]
-        if cell_weight < 0 or next_weight < 0:      # is not connected
+        if cell_weight < 0 or next_weight < 0:  # is not connected
             return
         weight = (cell_weight + next_weight) / 2
         g.add_edge(Edge(
@@ -51,4 +51,3 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]]) -> Graph:
                 # has right cell
                 add_edge((i, j), (i, j + 1))
     return g
-

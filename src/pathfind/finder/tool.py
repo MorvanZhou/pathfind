@@ -1,6 +1,6 @@
-from pathfind.graph.graph import Graph
 from pathfind.finder import alg
 from pathfind.finder.finder import BaseFinder, GraphPath
+from pathfind.graph.graph import Graph
 
 METHOD_MAP = {
     "a*": alg.AStar,

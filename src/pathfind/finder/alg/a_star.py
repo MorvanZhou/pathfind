@@ -1,5 +1,5 @@
-from pathfind.graph.graph import Node
 from pathfind.finder.alg.greedy_best_first import GreedyBestFirst
+from pathfind.graph.graph import Node
 
 
 class AStar(GreedyBestFirst):

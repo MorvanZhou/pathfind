@@ -1,7 +1,7 @@
 import typing as tp
+from abc import ABCMeta, abstractmethod
 from collections import deque
 from queue import PriorityQueue, Empty
-from abc import ABCMeta, abstractmethod
 
 from pathfind.graph.graph import Node
 
