@@ -46,8 +46,14 @@ class BaseFinder(metaclass=ABCMeta):
     def check_neighbors(self, current: Node):
         pass
 
-    def cost_to(self, current: Node) -> float:
-        return self._cost_dict[current.name]
+    def cost_to(self, node: Node) -> float:
+        return self._cost_dict[node.name]
+
+    def heuristic(self, node: Node) -> float:
+        return 0.
+
+    def h(self, node: Node) -> float:
+        return self.heuristic(node)
 
     def discover(self, node: Node, cost: tp.Optional[float] = None):
         if cost is None:
@@ -69,10 +75,10 @@ class BaseFinder(metaclass=ABCMeta):
         return nodes
 
     @staticmethod
-    def neighbors(current: Node):
+    def successors(current: Node):
         for edge in current.edges.values():
-            neighbor_with_weight = current.get_neighbor_with_weight(edge.id)
-            yield neighbor_with_weight.node, neighbor_with_weight.weight
+            neighbor_with_weight = current.get_successor_with_weight(edge)
+            yield neighbor_with_weight
 
     def clear(self):
         self.frontier.clear()

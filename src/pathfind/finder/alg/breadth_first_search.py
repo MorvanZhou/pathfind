@@ -8,11 +8,12 @@ class BreadthFirstSearch(BaseFinder):
         super().__init__(FifoFrontier())
 
     def check_neighbors(self, current: Node):
-        for neighbor, _ in self.neighbors(current):
-            if not self.is_discovered(neighbor):
-                self.discover(neighbor)
-                self.frontier.put(neighbor)
-                self.came_from[neighbor.name] = current
+        for successor in self.successors(current):
+            n = successor.node
+            if not self.is_discovered(n):
+                self.discover(n)
+                self.frontier.put(n)
+                self.came_from[n.name] = current
 
 
 class BFS(BreadthFirstSearch):

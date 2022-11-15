@@ -25,48 +25,69 @@ def _reset_global_name_count():
 @dataclass
 class LinkedNode:
     node: Node
-    back: bool
-    edge: Edge
-
-    @property
-    def weight(self):
-        if self.back:
-            return self.edge.back_weight
-        else:
-            return self.edge.weight
+    weight: float
 
 
 @dataclass
 class Node:
     name: str = field(default_factory=_get_node_name)
     edges: tp.Dict[str, Edge] = field(default_factory=dict)
-    _neighbors: tp.Dict[str, LinkedNode] = field(default_factory=dict)
+    successors: tp.Dict[str, LinkedNode] = field(default_factory=dict)
+    predecessors: tp.Dict[str, LinkedNode] = field(default_factory=dict)
     position: tp.Sequence[float] = field(default_factory=tuple)
 
     def link(self, edge: Edge):
-        self.edges[edge.id] = edge
-        if edge.node2 is self:
-            if edge.back_weight >= 0:
-                ln = LinkedNode(node=edge.node1, back=True, edge=edge)
-                self._neighbors[edge.id] = ln
-        else:
+        if edge.node1 is self:
             if edge.weight >= 0:
-                ln = LinkedNode(node=edge.node2, back=False, edge=edge)
-                self._neighbors[edge.id] = ln
+                self.successors[edge.id] = LinkedNode(node=edge.node2, weight=edge.weight)
+            if edge.back_weight >= 0:
+                self.predecessors[edge.id] = LinkedNode(node=edge.node2, weight=edge.back_weight)
+        elif edge.node2 is self:
+            if edge.weight >= 0:
+                self.successors[edge.id] = LinkedNode(node=edge.node1, weight=edge.weight)
+            if edge.back_weight >= 0:
+                self.predecessors[edge.id] = LinkedNode(node=edge.node1, weight=edge.back_weight)
+        else:
+            raise ValueError(f"edge does not include this {self.name}")
 
-    def get_neighbor(self, edge: str) -> Node:
-        return self.get_neighbor_with_weight(edge).node
+        self.edges[edge.id] = edge
 
-    def get_neighbor_with_weight(self, edge: str) -> LinkedNode:
-        return self._neighbors[edge]
+    def get_successor(self, edge: tp.Union[str, Edge]) -> Node:
+        return self.get_successor_with_weight(edge).node
+
+    def get_successor_with_weight(self, edge: tp.Union[str, Edge]) -> LinkedNode:
+        if not isinstance(edge, str):
+            edge = edge.id
+        return self.successors[edge]
+
+    def get_all_successors(self) -> tp.List[Node]:
+        return [ln.node for ln in self.successors.values()]
+
+    def get_all_successors_with_weight(self) -> tp.List[LinkedNode]:
+        return list(self.successors.values())
+
+    def get_predecessor(self, edge: tp.Union[str, Edge]) -> Node:
+        return self.get_predecessor_with_weight(edge).node
+
+    def get_predecessor_with_weight(self, edge: tp.Union[str, Edge]) -> LinkedNode:
+        if isinstance(edge, Edge):
+            edge = edge.id
+        return self.predecessors[edge]
+
+    def get_all_predecessors(self) -> tp.List[Node]:
+        return [ln.node for ln in self.predecessors.values()]
+
+    def get_all_predecessors_with_weight(self) -> tp.List[LinkedNode]:
+        return list(self.predecessors.values())
 
     @property
     def neighbors(self) -> tp.List[Node]:
-        return [ln.node for ln in self._neighbors.values()]
-
-    @property
-    def neighbors_with_weight(self):
-        return self._neighbors.values()
+        """
+        Including both predecessors and successors
+        Returns:
+            list of Node
+        """
+        return [ln.node for ln in self.predecessors.values()] + [ln.node for ln in self.successors.values()]
 
     def distance_to(self, node: Node) -> float:
         return self.euclidean_distance(node)

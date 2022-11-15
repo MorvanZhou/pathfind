@@ -58,5 +58,7 @@ class EdgeTest(unittest.TestCase):
             pathfind.Edge("n1", "n2", weight=-1)
 
         e = pathfind.Edge("n1", "n2", weight=-1, back_weight=1)
-        self.assertEqual(0, len(e.node1.neighbors))
-        self.assertEqual(1, len(e.node2.neighbors))
+        self.assertEqual(1, len(e.node1.predecessors))
+        self.assertEqual(0, len(e.node1.successors))
+        self.assertEqual(0, len(e.node2.successors))
+        self.assertEqual(1, len(e.node2.predecessors))

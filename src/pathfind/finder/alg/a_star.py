@@ -10,12 +10,13 @@ class AStar(GreedyBestFirst):
         self.k = k
 
     def check_neighbors(self, current: Node):
-        for neighbor, cost in self.neighbors(current):
-            new_cost = self.cost_to(current) + cost
-            if not self.is_discovered(neighbor) or new_cost < self.cost_to(neighbor):
-                self.discover(neighbor, new_cost)
-                priority = new_cost
+        for successor in self.successors(current):
+            n = successor.node
+            g = self.cost_to(current) + successor.weight
+            if not self.is_discovered(n) or g < self.cost_to(n):
+                self.discover(n, g)
+                f = g  # priority
                 if self.k > 0:
-                    priority += self.k * self.heuristic(neighbor)
-                self.frontier.put(neighbor, priority, new_cost)  # same f = g + h, then sort g
-                self.came_from[neighbor.name] = current
+                    f += self.k * self.h(n)
+                self.frontier.put(n, f, g)  # same f = g + h, then sort g
+                self.came_from[n.name] = current

@@ -8,9 +8,10 @@ class Dijkstra(BaseFinder):
         super().__init__(PriorityFrontier())
 
     def check_neighbors(self, current: Node):
-        for neighbor, cost in self.neighbors(current):
-            new_cost = self.cost_to(current) + cost
-            if not self.is_discovered(neighbor) or new_cost < self.cost_to(neighbor):
-                self.discover(neighbor, new_cost)
-                self.frontier.put(neighbor, new_cost)
-                self.came_from[neighbor.name] = current
+        for successor in self.successors(current):
+            n = successor.node
+            g = self.cost_to(current) + successor.weight
+            if not self.is_discovered(n) or g < self.cost_to(n):
+                self.discover(n, g)
+                self.frontier.put(n, g)
+                self.came_from[n.name] = current
