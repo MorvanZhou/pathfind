@@ -16,7 +16,7 @@ class EdgeTest(unittest.TestCase):
         self.assertEqual(n1, e.node1)
         self.assertEqual(n2, e.node2)
         self.assertEqual(0.2, e.weight)
-        self.assertEqual(0.2, e.weight_back)
+        self.assertEqual(0.2, e.back_weight)
         self.assertEqual("w1:w2", e.id)
 
     def test_negative_weight(self):
@@ -32,12 +32,12 @@ class EdgeTest(unittest.TestCase):
     def test_define_2_costs(self):
         n1 = pathfind.Node()
         n2 = pathfind.Node()
-        e = pathfind.Edge(node1=n1, node2=n2, weight=0.2, weight_back=0.1)
+        e = pathfind.Edge(node1=n1, node2=n2, weight=0.2, back_weight=0.1)
 
         self.assertEqual(n1, e.node1)
         self.assertEqual(n2, e.node2)
         self.assertEqual(0.2, e.weight)
-        self.assertEqual(0.1, e.weight_back)
+        self.assertEqual(0.1, e.back_weight)
 
     def test_name(self):
         my_n0 = pathfind.Node(name="my_n0")  # node name set to "my_n0"
@@ -50,3 +50,13 @@ class EdgeTest(unittest.TestCase):
         g = pathfind.Graph()
         g.add_edges([e0, e1, e2])
         self.assertEqual(3, len(g.edges))
+
+    def test_back_link(self):
+        with self.assertRaises(ValueError):
+            pathfind.Edge("n1", "n2", weight=-1, back_weight=-1)
+        with self.assertRaises(ValueError):
+            pathfind.Edge("n1", "n2", weight=-1)
+
+        e = pathfind.Edge("n1", "n2", weight=-1, back_weight=1)
+        self.assertEqual(0, len(e.node1.neighbors))
+        self.assertEqual(1, len(e.node2.neighbors))

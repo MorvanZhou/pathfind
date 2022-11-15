@@ -31,7 +31,7 @@ class LinkedNode:
     @property
     def weight(self):
         if self.back:
-            return self.edge.weight_back
+            return self.edge.back_weight
         else:
             return self.edge.weight
 
@@ -46,7 +46,7 @@ class Node:
     def link(self, edge: Edge):
         self.edges[edge.id] = edge
         if edge.node2 is self:
-            if edge.weight_back >= 0:
+            if edge.back_weight >= 0:
                 ln = LinkedNode(node=edge.node1, back=True, edge=edge)
                 self._neighbors[edge.id] = ln
         else:

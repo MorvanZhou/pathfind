@@ -17,7 +17,7 @@ class Edge:
     node1: tp.Union[Node, str]
     node2: tp.Union[Node, str]
     weight: float
-    weight_back: float = field(default=None)
+    back_weight: float = field(default=None)
     id: str = field(default="", init=False)
 
     def __post_init__(self):
@@ -30,22 +30,22 @@ class Edge:
                     global_nodes[_n.name] = _n
                 setattr(self, attr_name, _n)
 
-        self.weight_back = self.weight_back if self.weight_back is not None else self.weight
-        if self.weight_back < 0 and self.weight < 0:
-            raise ValueError("weight and weight_back cannot be both negative")
+        self.back_weight = self.back_weight if self.back_weight is not None else self.weight
+        if self.back_weight < 0 and self.weight < 0:
+            raise ValueError("weight and back_weight cannot be both negative")
         nodes = sorted({self.node1.name, self.node2.name})
         self.id = f"{nodes[0]}:{nodes[1]}"
 
         self.node1.link(self)
         self.node2.link(self)
 
-    def set_weight(self, weight: float, weight_back: tp.Optional[float] = None):
-        if weight_back is None:
-            weight_back = weight
-        if self.weight_back < 0 and self.weight < 0:
-            raise ValueError("weight and weight_back cannot be both negative")
+    def set_weight(self, weight: float, back_weight: tp.Optional[float] = None):
+        if back_weight is None:
+            back_weight = weight
+        if self.back_weight < 0 and self.weight < 0:
+            raise ValueError("weight and back_weight cannot be both negative")
         self.weight = weight
-        self.weight_back = weight_back
+        self.back_weight = back_weight
 
     @property
     def nodes(self) -> tp.List[Node]:

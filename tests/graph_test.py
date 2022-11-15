@@ -28,8 +28,8 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(3, len(g.edges))
         self.assertEqual(3, len(g.nodes))
         self.assertIn("n1:n2", g.edges)
-        self.assertEqual(0.1, g.edges["n1:n2"].weight_back)
+        self.assertEqual(0.1, g.edges["n1:n2"].back_weight)
         self.assertEqual(0.3, g.edges["n2:n3"].weight)
-        self.assertEqual(0.4, g.edges["n2:n3"].weight_back)
+        self.assertEqual(0.4, g.edges["n2:n3"].back_weight)
 
         # g.plot()

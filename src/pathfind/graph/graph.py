@@ -33,7 +33,7 @@ class Graph:
                 w_back = edge_data[3]
             except IndexError:
                 w_back = w
-            self.add_edge(Edge(node1=n1, node2=n2, weight=w, weight_back=w_back))
+            self.add_edge(Edge(node1=n1, node2=n2, weight=w, back_weight=w_back))
 
     def add(self, edge: Edge):
         self.add_edge(edge)

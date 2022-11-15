@@ -14,7 +14,7 @@ class TransformTest(unittest.TestCase):
         self.assertEqual(9, len(g.nodes))
         self.assertEqual(12, len(g.edges))
         self.assertEqual(2.5, g.edges["0,0:1,0"].weight)
-        self.assertEqual(2.5, g.edges["0,0:1,0"].weight_back)
+        self.assertEqual(2.5, g.edges["0,0:1,0"].back_weight)
         self.assertEqual(5.5, g.edges["1,1:1,2"].weight)
 
     def test_not_connect(self):
