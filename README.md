@@ -14,9 +14,11 @@ Implementation of path finding algorithms including:
 pip install pathfind
 ```
 
-# Usage
+# Basic Usage
 
-Define a graph to transform graph from a matrix, then find a path from start point to end point.
+Define a graph to transform graph from a matrix, then find a path from start point to end point. The value in `m`
+indicates a cost at that node. Note that the -1 in `m` represents the cost in that node is infinity, which means this
+node is not connected to others.
 
 ```python
 import pathfind
@@ -49,11 +51,13 @@ graph.plot(trace=path)
 
 <img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/bfs.png" alt="drawing" width="450"/>
 
+# Graph setup
 
-Set graph by hand.
+Another way to define a graph is to config the edge by give \[node1's name, node2's name, cost] pairs.
 
 ```python
 conf = [
+    # [node1's name, node2's name, weight, *back_weight]
     ["n1", "n2", 0.1],
     ["n1", "n3", 0.2],
     ["n2", "n3", 0.3]
