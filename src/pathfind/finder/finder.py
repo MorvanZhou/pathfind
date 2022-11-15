@@ -15,7 +15,7 @@ GraphPath = tp.List[str]
 class BaseFinder(metaclass=ABCMeta):
     def __init__(self, frontier: Frontier):
         self.frontier = frontier
-        self._cost_so_far: tp.Dict[str, float] = {}
+        self._cost_dict: tp.Dict[str, float] = {}
         self.came_from: NodeTrace = {}  # key: node name, value: parent node
         self.start: tp.Optional[Node] = None
         self.end: tp.Optional[Node] = None
@@ -28,7 +28,6 @@ class BaseFinder(metaclass=ABCMeta):
     def explore(self, graph: Graph, start: str, end: str) -> NodeTrace:
         self.clear()
 
-        self.frontier.set_nodes(graph_nodes=graph.nodes)
         self.start = graph.nodes[start]
         self.end = graph.nodes[end]
 
@@ -48,15 +47,15 @@ class BaseFinder(metaclass=ABCMeta):
         pass
 
     def cost_to(self, current: Node) -> float:
-        return self._cost_so_far[current.name]
+        return self._cost_dict[current.name]
 
     def discover(self, node: Node, cost: tp.Optional[float] = None):
         if cost is None:
             cost = -1
-        self._cost_so_far[node.name] = cost
+        self._cost_dict[node.name] = cost
 
     def is_discovered(self, node: Node) -> bool:
-        return node.name in self._cost_so_far
+        return node.name in self._cost_dict
 
     @staticmethod
     def traceback(start, end, explored: NodeTrace) -> GraphPath:
@@ -72,12 +71,12 @@ class BaseFinder(metaclass=ABCMeta):
     @staticmethod
     def neighbors(current: Node):
         for edge in current.edges.values():
-            neighbor = current.get_neighbor(edge.id)
-            yield neighbor, edge.weight
+            neighbor_with_weight = current.get_neighbor_with_weight(edge.id)
+            yield neighbor_with_weight.node, neighbor_with_weight.weight
 
     def clear(self):
         self.frontier.clear()
-        self._cost_so_far.clear()
+        self._cost_dict.clear()
         self.came_from.clear()
         self.start = None
         self.end = None

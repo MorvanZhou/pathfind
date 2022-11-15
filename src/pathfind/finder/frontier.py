@@ -1,20 +1,15 @@
-import typing as tp
 from abc import ABCMeta, abstractmethod
-from collections import deque
-from queue import PriorityQueue, Empty
+from queue import PriorityQueue, Empty, LifoQueue, Queue
 
 from pathfind.graph.graph import Node
 
 
 class Frontier(metaclass=ABCMeta):
-    def __init__(self):
-        self.nodes = {}
-
-    def set_nodes(self, graph_nodes: tp.Dict[str, Node]):
-        self.nodes = graph_nodes
+    def __init__(self, q: Queue):
+        self.q: Queue = q
 
     @abstractmethod
-    def put(self, item: Node, weight=0):
+    def put(self, item: Node, *args):
         pass
 
     @abstractmethod
@@ -29,45 +24,60 @@ class Frontier(metaclass=ABCMeta):
     def clear(self):
         pass
 
+    def _clear(self):
+        while not self.q.empty():
+            try:
+                self.q.get(False)
+            except Empty:
+                continue
+            self.q.task_done()
 
-class FIFOFrontier(Frontier):
+
+class FifoFrontier(Frontier):
     def __init__(self):
-        super().__init__()
-        self.q = deque()
+        super().__init__(Queue())
 
-    def put(self, item: Node, weight=0):
-        self.q.append(item)
+    def put(self, item: Node, *args):
+        self.q.put(item)
 
     def get(self) -> Node:
-        return self.q.popleft()
+        return self.q.get()
 
     def empty(self) -> bool:
-        return len(self.q) == 0
+        return self.q.empty()
 
     def clear(self):
-        self.nodes.clear()
-        self.q.clear()
+        self._clear()
 
 
-class FILOFrontier(FIFOFrontier):
+class LifoFrontier(Frontier):
     def __init__(self):
-        super().__init__()
-        self.q = deque()
+        super().__init__(LifoQueue())
+
+    def put(self, item: Node, *args):
+        self.q.put(item)
 
     def get(self) -> Node:
-        return self.q.pop()
+        return self.q.get()
+
+    def empty(self) -> bool:
+        return self.q.empty()
+
+    def clear(self):
+        self._clear()
 
 
 class PriorityFrontier(Frontier):
     def __init__(self):
-        super().__init__()
-        self.q = PriorityQueue()
+        super().__init__(PriorityQueue())
+        self.nodes = {}
 
-    def put(self, item: Node, weight=0):
-        self.q.put((weight, item.name))
+    def put(self, item: Node, *weight):
+        self.nodes[item.name] = item
+        self.q.put((*weight, item.name))
 
     def get(self) -> Node:
-        node_name = self.q.get()[1]
+        node_name = self.q.get()[-1]
         return self.nodes[node_name]
 
     def empty(self) -> bool:
@@ -75,9 +85,3 @@ class PriorityFrontier(Frontier):
 
     def clear(self):
         self.nodes.clear()
-        while not self.q.empty():
-            try:
-                self.q.get(False)
-            except Empty:
-                continue
-            self.q.task_done()

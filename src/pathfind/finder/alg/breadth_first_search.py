@@ -1,11 +1,11 @@
 from pathfind.finder.finder import BaseFinder
-from pathfind.finder.frontier import FIFOFrontier
+from pathfind.finder.frontier import FifoFrontier
 from pathfind.graph.node import Node
 
 
 class BreadthFirstSearch(BaseFinder):
     def __init__(self):
-        super().__init__(FIFOFrontier())
+        super().__init__(FifoFrontier())
 
     def check_neighbors(self, current: Node):
         for neighbor, _ in self.neighbors(current):

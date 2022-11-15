@@ -67,18 +67,18 @@ graph.plot()
 Or you can set edge's and node's details by following way：
 
 ```python
-n1 = pathfind.Node()
-n2 = pathfind.Node()
-n3 = pathfind.Node()
-e1 = pathfind.Edge(node1=n1, node2=n2, weight=0.2)
-e2 = pathfind.Edge(node1=n1, node2=n3, weight=0.1)
-e3 = pathfind.Edge(n2, n3, weight=0)
+my_n0 = pathfind.Node(name="my_n0")  # node name set to "my_n0"
+auto_name = pathfind.Node()  # node name automatically set to "n0"
+n2 = "n2"  # pass a string to represent node name
+e0 = pathfind.Edge(node1=my_n0, node2=auto_name, weight=0.2)
+e1 = pathfind.Edge(node1=my_n0, node2=n2, weight=0.1)
+e2 = pathfind.Edge(auto_name, n2, weight=0)
 
 g = pathfind.Graph()
-g.add_edges([e1, e2, e3])
+g.add_edges([e0, e1, e2])
 g.edges
 """
-{'n0:n1': n0:n1, 'n0:n2': n0:n2, 'n1:n2': n1:n2}
+{'my_n0:n0': my_n0:n0, 'my_n0:n2': my_n0:n2, 'n0:n2': n0:n2}
 """
 ```
 

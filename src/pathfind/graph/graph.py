@@ -16,6 +16,10 @@ class Graph:
         if conf is not None:
             self.load(conf)
 
+    def clear(self):
+        self.nodes.clear()
+        self.edges.clear()
+
     def load(self, conf: tp.Sequence[tp.Sequence]):
         for edge_data in conf:
             n_edge_data = len(edge_data)
@@ -38,15 +42,19 @@ class Graph:
         if node.name not in self.nodes:
             self.nodes[node.name] = node
         else:
-            if self.nodes[node.name] is not node:
-                raise ValueError(f"two different nodes have the same {node.name=}")
+            raise ValueError(f"node of name '{node.name}' have already been added")
 
     def add_edge(self, edge: Edge):
         if edge.id in self.edges:
             raise ValueError(f"{edge.id=} has been added")
+
+        for n in edge.nodes:
+            if n.name in self.nodes:
+                if self.nodes[n.name] is not n:
+                    raise ValueError(f"two different nodes have the same name '{n.name}'")
+            else:
+                self.add_node(n)
         self.edges[edge.id] = edge
-        self.add_node(edge.node1)
-        self.add_node(edge.node2)
 
     def add_edges(self, edges: tp.Sequence[Edge]):
         for edge in edges:

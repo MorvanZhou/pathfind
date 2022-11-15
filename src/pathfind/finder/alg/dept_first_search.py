@@ -1,11 +1,11 @@
 from pathfind.finder.finder import BaseFinder
-from pathfind.finder.frontier import FILOFrontier
+from pathfind.finder.frontier import LifoFrontier
 from pathfind.graph.node import Node
 
 
 class DeptFirstSearch(BaseFinder):
     def __init__(self):
-        super().__init__(FILOFrontier())
+        super().__init__(LifoFrontier())
 
     def check_neighbors(self, current: Node):
         for neighbor, _ in self.neighbors(current):

@@ -23,22 +23,50 @@ def _reset_global_name_count():
 
 
 @dataclass
+class LinkedNode:
+    node: Node
+    back: bool
+    edge: Edge
+
+    @property
+    def weight(self):
+        if self.back:
+            return self.edge.weight_back
+        else:
+            return self.edge.weight
+
+
+@dataclass
 class Node:
     name: str = field(default_factory=_get_node_name)
     edges: tp.Dict[str, Edge] = field(default_factory=dict)
-    linked_node: tp.Dict[str, Node] = field(default_factory=dict)
+    _neighbors: tp.Dict[str, LinkedNode] = field(default_factory=dict)
     position: tp.Sequence[float] = field(default_factory=tuple)
 
     def link(self, edge: Edge):
         self.edges[edge.id] = edge
-        self.linked_node[edge.id] = edge.node1 if edge.node2 is self else edge.node2
+        if edge.node2 is self:
+            if edge.weight_back >= 0:
+                ln = LinkedNode(node=edge.node1, back=True, edge=edge)
+                self._neighbors[edge.id] = ln
+        else:
+            if edge.weight >= 0:
+                ln = LinkedNode(node=edge.node2, back=False, edge=edge)
+                self._neighbors[edge.id] = ln
 
-    def get_neighbor(self, edge: str):
-        return self.linked_node[edge]
+    def get_neighbor(self, edge: str) -> Node:
+        return self.get_neighbor_with_weight(edge).node
+
+    def get_neighbor_with_weight(self, edge: str) -> LinkedNode:
+        return self._neighbors[edge]
 
     @property
-    def neighbors(self):
-        return list(self.linked_node.values())
+    def neighbors(self) -> tp.List[Node]:
+        return [ln.node for ln in self._neighbors.values()]
+
+    @property
+    def neighbors_with_weight(self):
+        return self._neighbors.values()
 
     def distance_to(self, node: Node) -> float:
         return self.euclidean_distance(node)
