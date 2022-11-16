@@ -41,7 +41,7 @@ graph.plot(trace=path)
 <img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/astar.png" alt="drawing" width="450"/>
 
 
-Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkstra", "dfs").
+Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkstra", "dfs", "d*lite").
 
 ```python
 path = pathfind.find(graph, start="4,0", end="0,0", method="bfs")
