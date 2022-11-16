@@ -1,17 +1,17 @@
 from pathfind.finder.finder import BaseFinder
-from pathfind.finder.frontier import PriorityFrontier
+from pathfind.finder.queue import PriorityFinderQueue
 from pathfind.graph.graph import Node
 
 
 class Dijkstra(BaseFinder):
     def __init__(self):
-        super().__init__(PriorityFrontier())
+        super().__init__(PriorityFinderQueue())
 
     def check_neighbors(self, current: Node):
-        for successor in self.successors(current):
-            n = successor.node
-            g = self.cost_to(current) + successor.weight
-            if not self.is_discovered(n) or g < self.cost_to(n):
-                self.discover(n, g)
-                self.frontier.put(n, g)
+        for neighbor in self.successors(current):
+            n = neighbor.node
+            g = self.g(current) + neighbor.weight
+            if not self.is_visited(n) or g < self.g(n):
+                self.set_g(n, g)
+                self.queue.put(n, g)
                 self.came_from[n.name] = current

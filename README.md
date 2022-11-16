@@ -6,7 +6,8 @@ Implementation of path finding algorithms including:
 - Breadth-First Search (BFS)
 - Dijkstra Search
 - Greedy Best-First Search
-- A\* Search
+- A\*
+- D\*-Lite
 
 # Install
 

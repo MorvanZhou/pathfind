@@ -1,10 +1,11 @@
+import typing as tp
 from abc import ABCMeta, abstractmethod
 from queue import PriorityQueue, Empty, LifoQueue, Queue
 
 from pathfind.graph.graph import Node
 
 
-class Frontier(metaclass=ABCMeta):
+class BaseQueue(metaclass=ABCMeta):
     def __init__(self, q: Queue):
         self.q: Queue = q
 
@@ -13,7 +14,7 @@ class Frontier(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get(self) -> Node:
+    def get(self) -> tp.Any:
         pass
 
     @abstractmethod
@@ -33,7 +34,7 @@ class Frontier(metaclass=ABCMeta):
             self.q.task_done()
 
 
-class FifoFrontier(Frontier):
+class FifoFinderQueue(BaseQueue):
     def __init__(self):
         super().__init__(Queue())
 
@@ -50,7 +51,7 @@ class FifoFrontier(Frontier):
         self._clear()
 
 
-class LifoFrontier(Frontier):
+class LifoFinderQueue(BaseQueue):
     def __init__(self):
         super().__init__(LifoQueue())
 
@@ -67,14 +68,20 @@ class LifoFrontier(Frontier):
         self._clear()
 
 
-class PriorityFrontier(Frontier):
+class PriorityFinderQueue(BaseQueue):
     def __init__(self):
         super().__init__(PriorityQueue())
         self.nodes = {}
 
     def put(self, item: Node, *weight):
         self.nodes[item.name] = item
-        self.q.put((*weight, item.name))
+        weights = []
+        for w in weight:
+            if isinstance(w, (list, tuple)):
+                weights += list(w)
+            else:
+                weights.append(w)
+        self.q.put((*weights, item.name))
 
     def get(self) -> Node:
         node_name = self.q.get()[-1]

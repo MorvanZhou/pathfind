@@ -5,7 +5,7 @@ import typing as tp
 import igraph as ig
 import matplotlib.pyplot as plt
 
-from pathfind.graph.edge import Edge
+from pathfind.graph.edge import Edge, get_edge_id
 from pathfind.graph.node import Node
 
 
@@ -23,11 +23,19 @@ class Graph:
     def load(self, conf: tp.Sequence[tp.Sequence]):
         for edge_data in conf:
             n_edge_data = len(edge_data)
-            if n_edge_data < 3 or n_edge_data > 4:
-                raise ValueError(f"config data shape error, edge config length={n_edge_data}, it should in [3, 4]")
+            if n_edge_data < 3 or n_edge_data > 6:
+                raise ValueError(f"config data shape error, edge config length={n_edge_data}, it should in [3, 6]")
             n_name1, n_name2 = edge_data[:2]
-            n1 = Node(name=n_name1) if n_name1 not in self.nodes else self.nodes[n_name1]
-            n2 = Node(name=n_name2) if n_name2 not in self.nodes else self.nodes[n_name2]
+            try:
+                position1 = edge_data[4]
+            except IndexError:
+                position1 = ()
+            try:
+                position2 = edge_data[5]
+            except IndexError:
+                position2 = ()
+            n1 = Node(name=n_name1, position=position1) if n_name1 not in self.nodes else self.nodes[n_name1]
+            n2 = Node(name=n_name2, position=position2) if n_name2 not in self.nodes else self.nodes[n_name2]
             w = edge_data[2]
             try:
                 w_back = edge_data[3]
@@ -83,7 +91,7 @@ class Graph:
     def remove_edge(self, edge: Edge):
         self.remove_edge_by_name(edge.id)
 
-    def __plot(self, trace=None):
+    def __plot(self, trace: tp.Optional[tp.Sequence[str]] = None):
         g = ig.Graph(directed=False)
         nodes_color = []
         for node in self.nodes.values():
@@ -96,10 +104,19 @@ class Graph:
                     nodes_color.append("#a5d3f5")
             g.add_vertex(node.name)
         max_width = 0
+        edge_id_set = set()
+        if trace is not None:
+            for i in range(len(trace) - 1):
+                edge_id_set.add(get_edge_id(self.nodes[trace[i]], self.nodes[trace[i + 1]]))
+        edges_color = []
         for edge in self.edges.values():
             if edge.weight > max_width:
                 max_width = edge.weight
             g.add_edge(edge.node1.name, edge.node2.name, width=edge.weight)
+            if edge.id in edge_id_set:
+                edges_color.append("#fc5f47")
+            else:
+                edges_color.append("#cccccc")
 
         fig, ax = plt.subplots(figsize=(10, 10))
 
@@ -113,7 +130,7 @@ class Graph:
             vertex_frame_color="white",
             vertex_label=g.vs["name"],
             vertex_label_size=15,
-            edge_color="#cccccc",
+            edge_color=edges_color,
             edge_width=[2.5 * (w + 7) / (7 + max_width) for w in g.es["width"]],
             # edge_arrow_size=0.02,
             # edge_arrow_width=1,

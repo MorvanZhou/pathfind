@@ -26,3 +26,15 @@ class TransformTest(unittest.TestCase):
         g = pathfind.transform.matrix2graph(m)
         self.assertEqual(7, len(g.nodes))
         self.assertEqual(7, len(g.edges))
+
+    def test_infinity(self):
+        m = [
+            [1, pathfind.INFINITY, 3],
+            [4, 5, 6],
+            [pathfind.INFINITY, 8, 9]
+        ]
+        g = pathfind.transform.matrix2graph(m)
+        # g.plot()
+        self.assertEqual(9, len(g.nodes))
+        self.assertEqual(12, len(g.edges))
+        self.assertEqual(pathfind.INFINITY, g.edges["2,0:2,1"].weight)

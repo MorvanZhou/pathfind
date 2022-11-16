@@ -8,6 +8,7 @@ METHOD_MAP = {
     "greedy": alg.Greedy,
     "dijkstra": alg.Dijkstra,
     "dfs": alg.DFS,
+    "d*lite": alg.DStarLite,
 }
 
 

@@ -7,14 +7,14 @@ class DFSTest(unittest.TestCase):
     def test_dfs(self):
         m = [
             [1, 1, 1, 1, 1],
-            [1, 1, -1, 1, 1],
+            [1, 1, pathfind.INFINITY, 1, 1],
             [1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1],
         ]
         g = pathfind.transform.matrix2graph(m)
 
-        alg = pathfind.finder.DeptFirstSearch()
+        alg = pathfind.finder.DepthFirstSearch()
         p = alg.find(g, "2,2", "0,2")
         # g.plot(trace=p)
         self.assertEqual([

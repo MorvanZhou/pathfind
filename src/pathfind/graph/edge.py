@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from pathfind.graph.node import Node
 
 global_nodes = {}
+INFINITY = float("inf")
 
 
 def clear_global_nodes():
@@ -33,8 +34,7 @@ class Edge:
         self.back_weight = self.back_weight if self.back_weight is not None else self.weight
         if self.back_weight < 0 and self.weight < 0:
             raise ValueError("weight and back_weight cannot be both negative")
-        nodes = sorted({self.node1.name, self.node2.name})
-        self.id = f"{nodes[0]}:{nodes[1]}"
+        self.id = get_edge_id(self.node1, self.node2)
 
         self.node1.link(self)
         self.node2.link(self)
@@ -56,3 +56,12 @@ class Edge:
 
     def __str__(self):
         return self.id
+
+
+def get_edge_id(node1: tp.Union[str, Node], node2: tp.Union[str, Node]) -> str:
+    if isinstance(node1, Node):
+        node1 = node1.name
+    if isinstance(node2, Node):
+        node2 = node2.name
+    nodes = sorted({node1, node2})
+    return f"{nodes[0]}:{nodes[1]}"

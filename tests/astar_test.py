@@ -8,7 +8,7 @@ class DijTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         m = [
             [1, 1, 1, 1, 1],
-            [1, 2, -1, 1, 1],
+            [1, 2, pathfind.INFINITY, 1, 1],
             [1, 1, 1, 1, 1],
             [8, 3, 1, 1, 1],
             [1, 1, 1, 1, 1],
@@ -29,3 +29,4 @@ class DijTest(unittest.TestCase):
         alg = pathfind.finder.AStar()
         p = alg.find(self.g, "4,0", "0,0")
         self.assertEqual(['4,0', '4,1', '3,1', '2,1', '2,0', '1,0', '0,0'], p)
+        # self.g.plot(p)

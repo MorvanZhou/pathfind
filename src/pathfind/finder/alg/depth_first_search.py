@@ -1,11 +1,11 @@
 from pathfind.finder.finder import BaseFinder
-from pathfind.finder.queue import FifoFinderQueue
+from pathfind.finder.queue import LifoFinderQueue
 from pathfind.graph.node import Node
 
 
-class BreadthFirstSearch(BaseFinder):
+class DepthFirstSearch(BaseFinder):
     def __init__(self):
-        super().__init__(FifoFinderQueue())
+        super().__init__(LifoFinderQueue())
 
     def check_neighbors(self, current: Node):
         for neighbor in self.successors(current):
@@ -16,5 +16,5 @@ class BreadthFirstSearch(BaseFinder):
                 self.came_from[n.name] = current
 
 
-class BFS(BreadthFirstSearch):
+class DFS(DepthFirstSearch):
     pass

@@ -25,7 +25,15 @@ def _reset_global_name_count():
 @dataclass
 class LinkedNode:
     node: Node
-    weight: float
+    edge: Edge
+    back: bool
+
+    @property
+    def weight(self):
+        if self.back:
+            return self.edge.back_weight
+        else:
+            return self.edge.weight
 
 
 @dataclass
@@ -39,14 +47,14 @@ class Node:
     def link(self, edge: Edge):
         if edge.node1 is self:
             if edge.weight >= 0:
-                self.successors[edge.id] = LinkedNode(node=edge.node2, weight=edge.weight)
+                self.successors[edge.id] = LinkedNode(node=edge.node2, edge=edge, back=False)
             if edge.back_weight >= 0:
-                self.predecessors[edge.id] = LinkedNode(node=edge.node2, weight=edge.back_weight)
+                self.predecessors[edge.id] = LinkedNode(node=edge.node2, edge=edge, back=True)
         elif edge.node2 is self:
             if edge.weight >= 0:
-                self.successors[edge.id] = LinkedNode(node=edge.node1, weight=edge.weight)
+                self.successors[edge.id] = LinkedNode(node=edge.node1, edge=edge, back=False)
             if edge.back_weight >= 0:
-                self.predecessors[edge.id] = LinkedNode(node=edge.node1, weight=edge.back_weight)
+                self.predecessors[edge.id] = LinkedNode(node=edge.node1, edge=edge, back=True)
         else:
             raise ValueError(f"edge does not include this {self.name}")
 
@@ -70,7 +78,7 @@ class Node:
         return self.get_predecessor_with_weight(edge).node
 
     def get_predecessor_with_weight(self, edge: tp.Union[str, Edge]) -> LinkedNode:
-        if isinstance(edge, Edge):
+        if not isinstance(edge, str):
             edge = edge.id
         return self.predecessors[edge]
 
