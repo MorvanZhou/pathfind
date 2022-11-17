@@ -31,6 +31,22 @@ class FindTest(unittest.TestCase):
             [1, 1, 1, 1, 1],
         ]
         g = pathfind.transform.matrix2graph(m)
-        alg = pathfind.finder.AStar()
-        p = alg.find(g, "4,0", "0,0")
+        f = pathfind.finder.AStar()
+        p = f.find(g, "4,0", "0,0")
         self.assertEqual(['4,0', '4,1', '3,1', '2,1', '2,0', '1,0', '0,0'], p)
+
+    def test_iter_explore(self):
+        m = [
+            [1, 1, 1, 1, 1],
+            [1, 2, -1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [8, 3, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+        ]
+        g = pathfind.transform.matrix2graph(m)
+        f = pathfind.finder.AStar()
+        get_cost = f.iter_explore(graph=g, start="4,0", end="0,0")
+        self.assertEqual({'4,0': 0, '3,0': 4.5, '4,1': 1.0}, next(get_cost))
+
+        self.assertEqual({'3,1': 3.0, '4,2': 2.0}, next(get_cost))
+        self.assertEqual({'2,1': 5.0, '3,2': 5.0}, next(get_cost))

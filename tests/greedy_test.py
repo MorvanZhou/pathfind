@@ -14,7 +14,7 @@ class GreedyTest(unittest.TestCase):
         ]
         g = pathfind.transform.matrix2graph(m)
 
-        alg = pathfind.finder.Greedy()
-        p = alg.find(g, "4,0", "0,0")
+        f = pathfind.finder.Greedy()
+        p = f.find(g, "4,0", "0,0")
         # g.plot(trace=p)
         self.assertEqual(['4,0', '3,0', '2,0', '1,0', '0,0'], p)

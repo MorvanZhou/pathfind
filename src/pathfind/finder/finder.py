@@ -9,17 +9,22 @@ from pathfind.graph.graph import Graph, Node
 if tp.TYPE_CHECKING:
     from pathfind.finder.queue import BaseQueue
 
-NodeTrace = tp.Dict[str, Node]
-GraphPath = tp.List[str]
+NodeName = str
+Cost = float
+GMap = tp.Dict[NodeName, Cost]
+NodeTrace = tp.Dict[NodeName, Node]
+GraphPath = tp.List[NodeName]
 
 
 class BaseFinder(metaclass=ABCMeta):
     def __init__(self, queue: tp.Optional[BaseQueue] = None):
         self.queue = queue
-        self._g: tp.Dict[str, float] = {}
+        self._g: GMap = {}  # cost from search start
         self.came_from: NodeTrace = {}  # key: node name, value: parent node
         self.start: tp.Optional[Node] = None
         self.end: tp.Optional[Node] = None
+        self.init_start: tp.Optional[Node] = None
+        self.init_end: tp.Optional[Node] = None
 
     def find(self, graph: Graph, start: str, end: str) -> GraphPath:
         explored = self.explore(graph, start, end)
@@ -28,21 +33,30 @@ class BaseFinder(metaclass=ABCMeta):
 
     def explore(self, graph: Graph, start: str, end: str) -> NodeTrace:
         # clear when redoing search
+        e = self.iter_explore(graph, start, end)
+        for _ in e:
+            pass
+        return self.came_from
+
+    def iter_explore(self, graph: Graph, start: str, end: str) -> tp.Optional[GMap]:
+        # clear when redoing search
         self.clear()
 
-        self.start = graph.nodes[start]
-        self.end = graph.nodes[end]
+        self.start = self.init_start = graph.nodes[start]
+        self.end = self.init_end = graph.nodes[end]
 
         self.queue.put(self.start, 0)
         self.set_g(self.start, 0)
+        new_g = {}
 
         while not self.queue.empty():
             current: Node = self.queue.get()
             if current is self.end:
                 break
             self.check_neighbors(current)
-
-        return self.came_from
+            yield {k: self._g[k] for k in self._g.keys() - new_g}
+            new_g.update(self._g)
+        yield None
 
     @abstractmethod
     def check_neighbors(self, current: Node):
@@ -70,8 +84,8 @@ class BaseFinder(metaclass=ABCMeta):
         return node.name in self._g
 
     def traceback(self, explored: NodeTrace) -> GraphPath:
-        trace_start_name = self.end.name
-        target_name = self.start.name
+        trace_start_name = self.init_end.name
+        target_name = self.init_start.name
         nodes = [trace_start_name]
 
         while True:
@@ -101,3 +115,5 @@ class BaseFinder(metaclass=ABCMeta):
         self.came_from.clear()
         self.start = None
         self.end = None
+        self.init_end = None
+        self.init_start = None
