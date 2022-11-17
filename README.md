@@ -44,7 +44,7 @@ graph.plot(trace=path)
 Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkstra", "dfs", "d*lite").
 
 ```python
-path = pathfind.find(graph, start="4,0", end="0,0", method="bfs")
+path = pathfind.find(graph, start="2,2", end="0,2", method="bfs")
 # ['2,2', '2,1', '1,1', '0,1', '0,2']
 
 graph.plot(trace=path)
@@ -81,11 +81,14 @@ e2 = pathfind.Edge(auto_name, n2, weight=0)
 
 g = pathfind.Graph()
 g.add_edges([e0, e1, e2])
+g.plot()
 g.edges
 """
 {'my_n0:n0': my_n0:n0, 'my_n0:n2': my_n0:n2, 'n0:n2': n0:n2}
 """
 ```
+
+<img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/custom.png" alt="drawing" width="450"/>
 
 # More examples
 
