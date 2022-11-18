@@ -56,7 +56,6 @@ class BaseFinder(metaclass=ABCMeta):
             self.check_neighbors(current)
             yield {k: self._g[k] for k in self._g.keys() - new_g}
             new_g.update(self._g)
-        yield None
 
     @abstractmethod
     def check_neighbors(self, current: Node):

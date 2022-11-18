@@ -114,7 +114,6 @@ class DStarLite(BaseFinder):
                     self.update_node(self.start)
             if changed:
                 self.compute_shortest_path()
-        yield None
 
     def update_node(self, u: Node):
         g_equal_rhs = self.g(u) == self.rhs(u)
