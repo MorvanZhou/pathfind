@@ -54,7 +54,7 @@ class Graph:
 
     def add_edge(self, edge: Edge):
         if edge.id in self.edges:
-            raise ValueError(f"{edge.id=} has been added")
+            raise ValueError(f"edge.id={edge.id} has been added")
 
         for n in edge.nodes:
             if n.name in self.nodes:

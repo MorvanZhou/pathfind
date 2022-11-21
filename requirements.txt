@@ -1,2 +1,2 @@
 igraph>=0.10.2
-matplotlib>=3.4.0
+matplotlib>=3.3.4
