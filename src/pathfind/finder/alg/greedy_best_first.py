@@ -1,5 +1,6 @@
 from pathfind.finder.finder import BaseFinder
 from pathfind.finder.queue import PriorityFinderQueue
+from pathfind.graph.edge import INFINITY
 from pathfind.graph.graph import Node
 
 
@@ -11,6 +12,8 @@ class GreedyBestFirst(BaseFinder):
     def check_neighbors(self, current: Node):
         for neighbor in self.successors(current):
             n = neighbor.node
+            if neighbor.weight == INFINITY:
+                continue
             if n.name not in self.came_from:
                 self.queue.put(n, self.heuristic(n))
                 self.came_from[n.name] = current

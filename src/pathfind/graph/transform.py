@@ -1,6 +1,6 @@
 import typing as tp
 
-from pathfind.graph import Graph, Edge, Node
+from pathfind.graph import Graph, Edge, Node, INFINITY
 
 
 def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]]) -> Graph:
@@ -29,7 +29,7 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]]) -> Graph:
         cell_weight = matrix[cell_pos[0]][cell_pos[1]]
         next_weight = matrix[next_pos[0]][next_pos[1]]
         if cell_weight < 0 or next_weight < 0:  # is not connected
-            return
+            cell_weight = next_weight = INFINITY
         weight = (cell_weight + next_weight) / 2
         g.add_edge(Edge(
             get_node(*cell_pos),
