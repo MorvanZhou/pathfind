@@ -68,6 +68,12 @@ class Graph:
         for edge in edges:
             self.add_edge(edge)
 
+    def get_node(self, name: str) -> Node:
+        return self.nodes[name]
+
+    def get_edge(self, eid: str) -> Edge:
+        return self.edges[eid]
+
     def remove_node_by_name(self, name: str):
         if name not in self.nodes:
             return
