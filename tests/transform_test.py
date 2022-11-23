@@ -1,3 +1,4 @@
+import math
 import unittest
 
 import pathfind
@@ -38,3 +39,15 @@ class TransformTest(unittest.TestCase):
         self.assertEqual(9, len(g.nodes))
         self.assertEqual(12, len(g.edges))
         self.assertEqual(pathfind.INFINITY, g.edges["2,0:2,1"].weight)
+
+    def test_diagonally(self):
+        m = [
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]
+        ]
+        g = pathfind.transform.matrix2graph(m, diagonally=True)
+        g.plot()
+        self.assertEqual(9, len(g.nodes))
+        self.assertEqual(12 + 2 * 4, len(g.edges))
+        self.assertAlmostEqual(math.sqrt(2), g.edges["0,2:1,1"].weight)

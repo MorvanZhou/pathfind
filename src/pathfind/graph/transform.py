@@ -1,9 +1,10 @@
+import math
 import typing as tp
 
 from pathfind.graph import Graph, Edge, Node, INFINITY
 
 
-def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]]) -> Graph:
+def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonally: bool = False) -> Graph:
     """
     Transform 2D matrix data to graph data. Data in matrix defines the cost for each cell. A cost < 0 indicates a road
      road to this cell is not connected.
@@ -25,12 +26,15 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]]) -> Graph:
             n_dict[name] = n
         return n
 
-    def add_edge(cell_pos, next_pos):
+    def add_edge(cell_pos, next_pos, diagonal: bool = False):
         cell_weight = matrix[cell_pos[0]][cell_pos[1]]
         next_weight = matrix[next_pos[0]][next_pos[1]]
         if cell_weight < 0 or next_weight < 0:  # is not connected
             cell_weight = next_weight = INFINITY
-        weight = (cell_weight + next_weight) / 2
+        if diagonal:
+            weight = math.sqrt(cell_weight ** 2 + next_weight ** 2)
+        else:
+            weight = (cell_weight + next_weight) / 2
         g.add_edge(Edge(
             get_node(*cell_pos),
             get_node(*next_pos),
@@ -50,4 +54,12 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]]) -> Graph:
             if j < dim2 - 1:
                 # has right cell
                 add_edge((i, j), (i, j + 1))
+
+            if diagonally:
+                if i < dim1 - 1:  # has bottom cell
+                    if j < dim2 - 1:  # has right cell
+                        add_edge((i, j), (i + 1, j + 1), diagonal=True)
+                    if 0 < j:  # has left cell
+                        add_edge((i, j), (i + 1, j - 1), diagonal=True)
+
     return g
