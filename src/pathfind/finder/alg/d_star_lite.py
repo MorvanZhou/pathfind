@@ -10,38 +10,51 @@ Key = tp.Tuple[float, float]
 
 
 class DStarQueue:
+    REMOVED = '<removed-item>'
+
     def __init__(self):
-        self.q = []
-        self.nodes: tp.Dict[str, tp.List[Node, Key]] = {}
+        self.pq = []
+        self.nodes: tp.Dict[str, Node] = {}
+        self.entry_finder: tp.Dict[str, tp.Any] = {}
 
     def insert(self, u: Node, key: Key):
-        heapq.heappush(self.q, (*key, u.name))
-        self.nodes[u.name] = [u, key]
+        if u.name in self.entry_finder:
+            self.remove(u)
+        entry = [key[0], key[1], u.name]
+        self.entry_finder[u.name] = entry
+        heapq.heappush(self.pq, entry)
+        self.nodes[u.name] = u
 
     def top(self) -> tp.Tuple[tp.Tuple[float, float], tp.Optional[Node]]:
-        self.q.sort()
-        if len(self.q) > 0:
-            t = self.q[0]
-            return t[:2], self.nodes[t[-1]][0]
-        else:
-            return (INFINITY, INFINITY), None
+        while self.pq:
+            k0, k1, name = heapq.heappop(self.pq)
+            if name is not self.REMOVED:
+                del self.entry_finder[name]
+                return (k0, k1), self.nodes.pop(name)
+        return (INFINITY, INFINITY), None
+        # self.pq.sort()
+        # if len(self.pq) > 0:
+        #     t = self.pq[0]
+        #     return (k0, k1), self.nodes[name]
+        # else:
+        #     return (INFINITY, INFINITY), None
 
     def update(self, u: Node, key: Key):
-        self.remove(u)
         self.insert(u, key)
 
     def remove(self, item: Node):
-        node, key = self.nodes.pop(item.name)
-        self.q.remove((*key, node.name))
-        heapq.heapify(self.q)
+        entry = self.entry_finder.pop(item.name)
+        entry[-1] = self.REMOVED
+        self.nodes.pop(item.name)
 
     def has(self, item: Node):
-        return item.name in self.nodes
+        return item.name in self.entry_finder
 
     def clear(self):
         self.nodes.clear()
-        self.q.clear()
-        heapq.heapify(self.q)
+        self.entry_finder.clear()
+        self.pq.clear()
+        heapq.heapify(self.pq)
 
 
 class DStarLite(BaseFinder):
@@ -135,7 +148,7 @@ class DStarLite(BaseFinder):
                 self.queue.update(u, k_new)
             elif g > rhs:
                 self.set_g(u, rhs)
-                self.queue.remove(u)
+                # self.queue.remove(u)  # removed when doing self.queue.top()
                 for s in self.predecessors(u):
                     if s.node is not self.end:
                         self.set_rhs(s.node, min(self.rhs(s.node), s.weight + self.g(u)))
@@ -143,6 +156,7 @@ class DStarLite(BaseFinder):
             else:
                 g_old = g
                 self.set_g(u, INFINITY)
+                self.queue.insert(u, k_old)  # add back after self.queue.top()
                 for s in self.predecessors(u):
                     if self.rhs(s.node) == s.weight + g_old:
                         if s.node is not self.end:

@@ -46,7 +46,7 @@ class TransformTest(unittest.TestCase):
             [1, 1, 1],
             [1, 1, 1]
         ]
-        g = pathfind.transform.matrix2graph(m, diagonally=True)
+        g = pathfind.transform.matrix2graph(m, diagonal=True)
         g.plot()
         self.assertEqual(9, len(g.nodes))
         self.assertEqual(12 + 2 * 4, len(g.edges))

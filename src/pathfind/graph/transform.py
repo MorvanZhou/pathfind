@@ -4,13 +4,14 @@ import typing as tp
 from pathfind.graph import Graph, Edge, Node, INFINITY
 
 
-def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonally: bool = False) -> Graph:
+def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonal: bool = False) -> Graph:
     """
     Transform 2D matrix data to graph data. Data in matrix defines the cost for each cell. A cost < 0 indicates a road
      road to this cell is not connected.
 
     Args:
-        matrix: 3D cost matrix
+        matrix: 2D list for cost matrix
+        diagonal (bool): include diagonal path, default to False
 
     Returns:
         Graph: graph data
@@ -26,12 +27,12 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonally: bool = Fal
             n_dict[name] = n
         return n
 
-    def add_edge(cell_pos, next_pos, diagonal: bool = False):
+    def add_edge(cell_pos, next_pos, is_diagonal: bool = False):
         cell_weight = matrix[cell_pos[0]][cell_pos[1]]
         next_weight = matrix[next_pos[0]][next_pos[1]]
         if cell_weight < 0 or next_weight < 0:  # is not connected
             cell_weight = next_weight = INFINITY
-        if diagonal:
+        if is_diagonal:
             weight = math.sqrt(cell_weight ** 2 + next_weight ** 2)
         else:
             weight = (cell_weight + next_weight) / 2
@@ -55,11 +56,11 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonally: bool = Fal
                 # has right cell
                 add_edge((i, j), (i, j + 1))
 
-            if diagonally:
+            if diagonal:
                 if i < dim1 - 1:  # has bottom cell
                     if j < dim2 - 1:  # has right cell
-                        add_edge((i, j), (i + 1, j + 1), diagonal=True)
+                        add_edge((i, j), (i + 1, j + 1), is_diagonal=True)
                     if 0 < j:  # has left cell
-                        add_edge((i, j), (i + 1, j - 1), diagonal=True)
+                        add_edge((i, j), (i + 1, j - 1), is_diagonal=True)
 
     return g
