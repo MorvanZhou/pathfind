@@ -47,7 +47,7 @@ class TransformTest(unittest.TestCase):
             [1, 1, 1]
         ]
         g = pathfind.transform.matrix2graph(m, diagonal=True)
-        g.plot()
+        # g.plot()
         self.assertEqual(9, len(g.nodes))
         self.assertEqual(12 + 2 * 4, len(g.edges))
         self.assertAlmostEqual(math.sqrt(2), g.edges["0,2:1,1"].weight)
