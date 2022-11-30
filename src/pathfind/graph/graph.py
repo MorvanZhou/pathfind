@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import typing as tp
 
 import igraph as ig
@@ -150,3 +151,61 @@ class Graph:
     def save_graph(self, path, trace=None):
         fig = self.__plot(trace)
         fig.savefig(path)
+
+
+class Grid(Graph):
+    def __init__(self, conf: tp.Optional[tp.Sequence[tp.Sequence]] = None, has_diagonal: bool = False):
+        super().__init__(conf=conf)
+        self.grid: tp.List[tp.List[Node]] = []
+        self.has_diagonal = has_diagonal
+
+    def load(self, conf: tp.Sequence[tp.Sequence]):
+        pass
+
+    def add_node_by_position(self, row: int, col: int, weight: float):
+        try:
+            self.grid[row]
+        except IndexError:
+            self.grid += [[] * (row + 1 - len(self.grid))]
+
+        try:
+            self.grid[row][col]
+        except IndexError:
+            self.grid[row] += [None for _ in range(col + 1 - len(self.grid[row]))]
+
+        if self.grid[row][col] is None:
+            n = Node(f"{row},{col}", position=(row, col), weight=weight)
+            self.grid[row][col] = n
+            self._try_add_top_left_edge(node=n)
+
+    def _try_add_top_left_edge(self, node: Node):
+        self.add_node(node)
+        node_row = int(node.position[0])
+        node_col = int(node.position[1])
+        to_be_added = []
+        if node_row >= 1:
+            n2 = self.get_node_by_position(node_row - 1, node_col)
+            w = (node.weight + n2.weight) / 2
+            to_be_added.append([n2, w])
+        if node_col >= 1:
+            n2 = self.get_node_by_position(node_row, node_col - 1)
+            w = (node.weight + n2.weight) / 2
+            to_be_added.append([n2, w])
+        if self.has_diagonal:
+            if node_row >= 1 and node_col + 1 < len(self.grid[node_row - 1]):
+                n2 = self.get_node_by_position(node_row - 1, node_col + 1)
+                w = math.sqrt(node.weight ** 2 + n2.weight ** 2)
+                to_be_added.append([n2, w])
+            if node_row >= 1 and node_col >= 1:
+                n2 = self.get_node_by_position(node_row - 1, node_col - 1)
+                w = math.sqrt(node.weight ** 2 + n2.weight ** 2)
+                to_be_added.append([n2, w])
+        for n2 in to_be_added:
+            e = Edge(node1=node, node2=n2[0], weight=n2[1], back_weight=n2[1])
+            self.edges[e.id] = e
+
+    def get_node_by_position(self, row: int, col: int):
+        return self.grid[row][col]
+
+    def get_edge_by_position(self, r1: int, c1: int, r2: int, c2: int):
+        return self.edges[f"{r1},{c1}:{r2},{c2}"]

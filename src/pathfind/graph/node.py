@@ -43,6 +43,7 @@ class Node:
     successors: tp.Dict[str, LinkedNode] = field(default_factory=dict)
     predecessors: tp.Dict[str, LinkedNode] = field(default_factory=dict)
     position: tp.Sequence[float] = field(default_factory=tuple)
+    weight: float = field(default=0)
 
     def link(self, edge: Edge):
         if edge.node1 is self:

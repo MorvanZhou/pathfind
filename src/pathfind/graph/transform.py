@@ -1,10 +1,9 @@
-import math
 import typing as tp
 
-from pathfind.graph import Graph, Edge, Node, INFINITY
+from pathfind.graph import Grid, INFINITY
 
 
-def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonal: bool = False) -> Graph:
+def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonal: bool = False) -> Grid:
     """
     Transform 2D matrix data to graph data. Data in matrix defines the cost for each cell. A cost < 0 indicates a road
      road to this cell is not connected.
@@ -14,53 +13,16 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonal: bool = False
         diagonal (bool): include diagonal path, default to False
 
     Returns:
-        Graph: graph data
+        Grid: graph data
     """
-    n_dict = {}
+    g = Grid(has_diagonal=diagonal)
 
-    def get_node(i, j):
-        name = f"{i},{j}"
-        if name in n_dict:
-            n = n_dict[name]
-        else:
-            n = Node(name, position=(i, j))
-            n_dict[name] = n
-        return n
-
-    def add_edge(cell_pos, next_pos, is_diagonal: bool = False):
-        cell_weight = matrix[cell_pos[0]][cell_pos[1]]
-        next_weight = matrix[next_pos[0]][next_pos[1]]
-        if cell_weight < 0 or next_weight < 0:  # is not connected
-            cell_weight = next_weight = INFINITY
-        if is_diagonal:
-            weight = math.sqrt(cell_weight ** 2 + next_weight ** 2)
-        else:
-            weight = (cell_weight + next_weight) / 2
-        g.add_edge(Edge(
-            get_node(*cell_pos),
-            get_node(*next_pos),
-            weight
-        ))
-
-    g = Graph()
-
-    dim1 = len(matrix)
     for i, row in enumerate(matrix):
         dim2 = len(row)
         for j in range(dim2):
-            if i < dim1 - 1:
-                # has bottom cell
-                add_edge((i, j), (i + 1, j))
-
-            if j < dim2 - 1:
-                # has right cell
-                add_edge((i, j), (i, j + 1))
-
-            if diagonal:
-                if i < dim1 - 1:  # has bottom cell
-                    if j < dim2 - 1:  # has right cell
-                        add_edge((i, j), (i + 1, j + 1), is_diagonal=True)
-                    if 0 < j:  # has left cell
-                        add_edge((i, j), (i + 1, j - 1), is_diagonal=True)
+            w = row[j]
+            if w is None or w < 0:
+                w = INFINITY
+            g.add_node_by_position(i, j, w)
 
     return g
