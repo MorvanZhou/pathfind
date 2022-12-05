@@ -1,3 +1,4 @@
+from pathfind.finder import tool
 from pathfind.finder.finder import BaseFinder
 from pathfind.finder.queue import PriorityFinderQueue
 from pathfind.graph.edge import INFINITY
@@ -19,11 +20,7 @@ class GreedyBestFirst(BaseFinder):
                 self.came_from[n.name] = current
 
     def heuristic(self, node: Node) -> float:
-        if self.distance_method == "manhattan":
-            return self.end.manhattan_distance(node)
-        elif self.distance_method == "euclidean":
-            return self.end.euclidean_distance(node)
-        return self.end.manhattan_distance(node)
+        return tool.distance(node, self.end, self.distance_method)
 
 
 class Greedy(GreedyBestFirst):

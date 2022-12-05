@@ -3,6 +3,7 @@ from __future__ import annotations
 import heapq
 import typing as tp
 
+from pathfind.finder import tool
 from pathfind.finder.finder import BaseFinder, NodeTrace
 from pathfind.graph import Node, Graph, INFINITY
 
@@ -178,11 +179,7 @@ class DStarLite(BaseFinder):
         return self._heuristic(self.start, node)
 
     def _heuristic(self, n1: Node, n2: Node) -> float:
-        if self.distance_method == "manhattan":
-            return n1.manhattan_distance(n2)
-        elif self.distance_method == "euclidean":
-            return n1.euclidean_distance(n2)
-        return n1.manhattan_distance(n2)
+        return tool.distance(n1, n2, self.distance_method)
 
     def set_rhs(self, node: Node, rhs: float):
         self._rhs[node.name] = rhs

@@ -4,4 +4,4 @@ from pathfind.finder.alg.d_star_lite import DStarLite
 from pathfind.finder.alg.depth_first_search import DFS, DepthFirstSearch
 from pathfind.finder.alg.dijkstra import Dijkstra
 from pathfind.finder.alg.greedy_best_first import GreedyBestFirst, Greedy
-from pathfind.finder.tool import find
+from pathfind.finder.alg.jump_point_search import JumpPointSearch, JPS

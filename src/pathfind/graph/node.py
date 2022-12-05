@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import typing as tp
 from dataclasses import dataclass, field
 
@@ -97,21 +96,6 @@ class Node:
             list of Node
         """
         return [ln.node for ln in self.predecessors.values()] + [ln.node for ln in self.successors.values()]
-
-    def distance_to(self, node: Node) -> float:
-        return self.euclidean_distance(node)
-
-    def euclidean_distance(self, node: Node) -> float:
-        d = 0
-        for i, j in zip(node.position, self.position):
-            d += math.pow(i - j, 2)
-        return math.sqrt(d)
-
-    def manhattan_distance(self, node: Node) -> float:
-        d = 0
-        for i, j in zip(node.position, self.position):
-            d += abs(i - j)
-        return d
 
     def __repr__(self):
         return self.name

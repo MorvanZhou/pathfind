@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import enum
 import math
 import typing as tp
 
 import igraph as ig
 import matplotlib.pyplot as plt
 
-from pathfind.graph.edge import Edge, get_edge_id
+from pathfind.graph.edge import Edge, get_edge_id, INFINITY
 from pathfind.graph.node import Node
 
 
@@ -153,20 +154,67 @@ class Graph:
         fig.savefig(path)
 
 
+class Direction(enum.Enum):
+    N = 0
+    W = enum.auto()
+    S = enum.auto()
+    E = enum.auto()
+    NW = enum.auto()
+    SW = enum.auto()
+    SE = enum.auto()
+    NE = enum.auto()
+
+    @staticmethod
+    def opposite(d: Direction) -> Direction:
+        return _OPPOSITE[d]
+
+
+_OPPOSITE = {
+    Direction.N: Direction.S,
+    Direction.S: Direction.N,
+    Direction.W: Direction.E,
+    Direction.E: Direction.W,
+    Direction.NW: Direction.SE,
+    Direction.SW: Direction.NE,
+    Direction.SE: Direction.NW,
+    Direction.NE: Direction.SW,
+}
+
+
 class Grid(Graph):
+    dire2delta = {
+        Direction.N: (-1, 0),
+        Direction.W: (0, -1),
+        Direction.S: (1, 0),
+        Direction.E: (0, 1),
+        Direction.NW: (-1, -1),
+        Direction.SW: (1, -1),
+        Direction.SE: (1, 1),
+        Direction.NE: (-1, 1),
+    }
+
     def __init__(self, conf: tp.Optional[tp.Sequence[tp.Sequence]] = None, has_diagonal: bool = False):
         super().__init__(conf=conf)
         self.grid: tp.List[tp.List[Node]] = []
+        self.node_pos_map: tp.Dict[str, tp.Tuple[int, int]] = {}
         self.has_diagonal = has_diagonal
 
     def load(self, conf: tp.Sequence[tp.Sequence]):
         pass
 
+    @property
+    def height(self) -> int:
+        return len(self.grid)
+
+    @property
+    def width(self) -> int:
+        return len(self.grid[0])
+
     def add_node_by_position(self, row: int, col: int, weight: float):
         try:
             self.grid[row]
         except IndexError:
-            self.grid += [[] * (row + 1 - len(self.grid))]
+            self.grid += [[] * (row + 1 - self.height)]
 
         try:
             self.grid[row][col]
@@ -176,6 +224,7 @@ class Grid(Graph):
         if self.grid[row][col] is None:
             n = Node(f"{row},{col}", position=(row, col), weight=weight)
             self.grid[row][col] = n
+            self.node_pos_map[n.name] = (row, col)
             self._try_add_top_left_edge(node=n)
 
     def _try_add_top_left_edge(self, node: Node):
@@ -209,3 +258,62 @@ class Grid(Graph):
 
     def get_edge_by_position(self, r1: int, c1: int, r2: int, c2: int):
         return self.edges[f"{r1},{c1}:{r2},{c2}"]
+
+    def get_directed_neighbor(self, node: Node, direction: Direction) -> tp.Optional[Node]:
+        row, col = self.node_pos_map[node.name]
+        dr, dc = self.dire2delta[direction]
+        new_row, new_col = row + dr, col + dc
+        if new_row < 0 or new_col < 0:
+            return None
+        try:
+            n = self.grid[new_row][new_col]
+            if n.weight == INFINITY:
+                return None
+            return n
+        except IndexError:
+            return None
+
+    def location_blocked(self, row: int, col: int) -> bool:
+        if row < 0 or col < 0 or row >= self.height or col >= self.width:
+            return True
+        return self.grid[row][col].weight == INFINITY
+
+    def has_forced_neighbor(self, node: Node, direction: Direction) -> bool:
+        row, col = self.node_pos_map[node.name]
+        if direction == Direction.N:
+            for delta in [-1, 1]:
+                if self.location_blocked(row, col + delta) \
+                        and not self.location_blocked(row - 1, col + delta):
+                    return True
+        elif direction == Direction.S:
+            for delta in [-1, 1]:
+                if self.location_blocked(row, col + delta) \
+                        and not self.location_blocked(row + 1, col + delta):
+                    return True
+        elif direction == Direction.W:
+            for delta in [-1, 1]:
+                if self.location_blocked(row + delta, col) \
+                        and not self.location_blocked(row + delta, col - 1):
+                    return True
+        elif direction == Direction.E:
+            for delta in [-1, 1]:
+                if self.location_blocked(row + delta, col) \
+                        and not self.location_blocked(row + delta, col + 1):
+                    return True
+        elif direction == Direction.NW:
+            if self.location_blocked(row, col + 1) \
+                    and not self.location_blocked(row - 1, col + 1):
+                return True
+        elif direction == Direction.NE:
+            if self.location_blocked(row, col - 1) \
+                    and not self.location_blocked(row - 1, col - 1):
+                return True
+        elif direction == Direction.SW:
+            if self.location_blocked(row, col + 1) \
+                    and self.location_blocked(row + 1, col + 1):
+                return True
+        elif direction == Direction.SE:
+            if self.location_blocked(row, col - 1) \
+                    and not self.location_blocked(row + 1, col - 1):
+                return True
+        return False

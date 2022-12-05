@@ -8,6 +8,7 @@ Implementation of path finding algorithms including:
 - Greedy Best-First Search
 - A\*
 - D\*-Lite
+- Jump Point Search (JPS) (running on maps with diagonal connection)
 
 # Install
 
@@ -41,7 +42,7 @@ graph.plot(trace=path)
 <img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/astar.png" alt="drawing" width="450"/>
 
 
-Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkstra", "dfs", "d*lite").
+Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkstra", "dfs", "d*lite", "jps").
 
 ```python
 path = pathfind.find(graph, start="2,2", end="0,2", method="bfs")
@@ -57,6 +58,8 @@ graph.plot(trace=path)
 Another way to define a graph is to config the edge by give \[node1's name, node2's name, cost] pairs.
 
 ```python
+import pathfind
+
 conf = [
     # [node1's name, node2's name, weight, *back_weight]
     ["n1", "n2", 0.1],
@@ -72,6 +75,8 @@ graph.plot()
 Or you can set edge's and node's details by following way：
 
 ```python
+import pathfind
+
 my_n0 = pathfind.Node(name="my_n0")  # node name set to "my_n0"
 auto_name = pathfind.Node()  # node name automatically set to "n0"
 n2 = "n2"  # pass a string to represent node name
