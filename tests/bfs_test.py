@@ -16,5 +16,5 @@ class BFSTest(unittest.TestCase):
 
         f = pathfind.finder.BreadthFirstSearch()
         p = f.find(g, "2,2", "0,2")
-        # g.plot(trace=p)
+        # g.show(trace=p)
         self.assertEqual(['2,2', '2,1', '1,1', '0,1', '0,2'], p)

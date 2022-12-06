@@ -99,7 +99,7 @@ class Graph:
     def remove_edge(self, edge: Edge):
         self.remove_edge_by_name(edge.id)
 
-    def __plot(self, trace: tp.Optional[tp.Sequence[str]] = None):
+    def plot(self, trace: tp.Optional[tp.Sequence[str]] = None):
         g = ig.Graph(directed=False)
         nodes_color = []
         for node in self.nodes.values():
@@ -128,7 +128,7 @@ class Graph:
 
         fig, ax = plt.subplots(figsize=(10, 10))
 
-        ig.plot(
+        ig.show(
             g,
             target=ax,
             layout=g.layout("auto"),
@@ -145,12 +145,12 @@ class Graph:
         )
         return fig
 
-    def plot(self, trace=None):
-        self.__plot(trace)
+    def show(self, trace=None):
+        self.plot(trace)
         plt.show()
 
     def save_graph(self, path, trace=None):
-        fig = self.__plot(trace)
+        fig = self.plot(trace)
         fig.savefig(path)
 
 

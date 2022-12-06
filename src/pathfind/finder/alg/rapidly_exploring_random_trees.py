@@ -78,7 +78,8 @@ class RapidlyExploringRandomTrees(BaseFinder):
                 n = new_node
         return graph.get_node(random.choice(list(self.trace_chain.keys())))
 
-    def move_drdc(self, direction: int, has_diagonal: bool):
+    @staticmethod
+    def move_drdc(direction: int, has_diagonal: bool):
         if direction == 0:
             dr = random.randint(0, 1)
             if dr == 0:

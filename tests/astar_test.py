@@ -30,10 +30,10 @@ class DijTest(unittest.TestCase):
         f = pathfind.finder.AStar()
         p = f.find(self.g, "4,0", "0,0")
         self.assertEqual(['4,0', '4,1', '3,1', '2,1', '2,0', '1,0', '0,0'], p)
-        # self.g.plot(p)
+        # self.g.show(p)
 
     def test_diagonal(self):
         f = pathfind.finder.AStar()
         p = f.find(self.dg, "4,0", "0,0")
-        # self.dg.plot(p)
+        # self.dg.show(p)
         self.assertEqual(['4,0', '4,1', '3,2', '2,1', '1,0', '0,0'], p)

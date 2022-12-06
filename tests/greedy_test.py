@@ -16,5 +16,5 @@ class GreedyTest(unittest.TestCase):
 
         f = pathfind.finder.Greedy()
         p = f.find(g, "4,0", "0,0")
-        # g.plot(trace=p)
+        # g.show(trace=p)
         self.assertEqual(['4,0', '3,0', '2,0', '1,0', '0,0'], p)

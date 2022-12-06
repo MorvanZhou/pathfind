@@ -27,7 +27,7 @@ class DStarLiteTest(unittest.TestCase):
             i += 1
         p = f.traceback(f.came_from)
         self.assertEqual(expected_path, p)
-        # self.g.plot(p)
+        # self.g.show(p)
 
     def test_change_weight(self):
         expected_path = ["A", "B", "D", "G"]
@@ -45,7 +45,7 @@ class DStarLiteTest(unittest.TestCase):
 
         p = f.traceback(f.came_from)
         self.assertEqual(expected_path, p)
-        # self.g.plot(p)
+        # self.g.show(p)
 
     def test_find(self):
         f = pathfind.finder.DStarLite()

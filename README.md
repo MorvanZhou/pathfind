@@ -36,7 +36,7 @@ graph = pathfind.transform.matrix2graph(m)
 path = pathfind.find(graph, start="4,0", end="0,0")
 # ['4,0', '4,1', '3,1', '2,1', '2,0', '1,0', '0,0']
 
-graph.plot(trace=path)
+graph.show(trace=path)
 ```
 
 <img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/astar.png" alt="drawing" width="450"/>
@@ -48,7 +48,7 @@ Finder can be changed by passing a string method ("a*", "bfs", "greedy", "dijkst
 path = pathfind.find(graph, start="2,2", end="0,2", method="bfs")
 # ['2,2', '2,1', '1,1', '0,1', '0,2']
 
-graph.plot(trace=path)
+graph.show(trace=path)
 ```
 
 <img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/bfs.png" alt="drawing" width="450"/>
@@ -67,7 +67,7 @@ conf = [
     ["n2", "n3", 0.3]
 ]
 graph = pathfind.Graph(conf)
-graph.plot()
+graph.show()
 ```
 
 <img src="https://raw.githubusercontent.com/MorvanZhou/pathfind/master/demo/graph.png" alt="drawing" width="450"/>
@@ -86,7 +86,7 @@ e2 = pathfind.Edge(auto_name, n2, weight=0)
 
 g = pathfind.Graph()
 g.add_edges([e0, e1, e2])
-g.plot()
+g.show()
 g.edges
 """
 {'my_n0:n0': my_n0:n0, 'my_n0:n2': my_n0:n2, 'n0:n2': n0:n2}

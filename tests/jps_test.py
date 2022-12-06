@@ -58,7 +58,7 @@ class JPSTest(unittest.TestCase):
         g = pathfind.transform.matrix2graph(m, diagonal=False)
         f = pathfind.finder.JPS()
         p = f.find(g, "4,0", "4,7")
-        # g.plot(p)
+        # g.show(p)
         self.assertEqual(
             ['4,0', '3,0', '2,0', '1,0', '0,0', '0,1', '0,2',
              '0,3', '0,4', '0,5', '1,5', '1,6', '2,6', '3,6', '4,6', '4,7'], p)
@@ -74,7 +74,7 @@ class JPSTest(unittest.TestCase):
         g = pathfind.transform.matrix2graph(m, diagonal=False)
         f = pathfind.finder.JPS()
         p = f.find(g, "4,0", "4,7")
-        # g.plot(p)
+        # g.show(p)
         self.assertEqual(
             ['4,0', '4,1', '4,2', '4,3', '3,3', '2,3', '2,4', '2,5', '2,6', '3,6', '4,6', '4,7'], p)
 
@@ -89,6 +89,6 @@ class JPSTest(unittest.TestCase):
         g = pathfind.transform.matrix2graph(m, diagonal=False)
         f = pathfind.finder.JPS()
         p = f.find(g, "4,0", "4,7")
-        # g.plot(p)
+        # g.show(p)
         self.assertEqual(
             ['4,0', '4,1', '4,2', '4,3', '4,4', '4,5', '4,6', '4,7'], p)

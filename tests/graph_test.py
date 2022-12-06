@@ -16,7 +16,7 @@ class GraphTest(unittest.TestCase):
         g.add_edges([e1, e2, e3])
         self.assertEqual(3, len(g.edges))
         self.assertEqual(3, len(g.nodes))
-        # g.plot()
+        # g.show()
 
     def test_create_conf(self):
         conf = [
@@ -32,4 +32,4 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(0.3, g.edges["n2:n3"].weight)
         self.assertEqual(0.4, g.edges["n2:n3"].back_weight)
 
-        # g.plot()
+        # g.show()
