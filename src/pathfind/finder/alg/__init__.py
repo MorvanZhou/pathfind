@@ -7,6 +7,7 @@ from pathfind.finder.alg.depth_first_search import DepthFirstSearch, DFS
 from pathfind.finder.alg.dijkstra import Dijkstra
 from pathfind.finder.alg.greedy_best_first import GreedyBestFirst, Greedy
 from pathfind.finder.alg.jump_point_search import JumpPointSearch, JPS
+from pathfind.finder.alg.rapidly_exploring_random_trees import RapidlyExploringRandomTrees, RRTs
 from pathfind.finder.finder import BaseFinder, GraphPath
 from pathfind.graph import Graph
 
@@ -17,6 +18,8 @@ METHOD_MAP: tp.Dict[str, tp.Callable] = {
     "dijkstra": Dijkstra,
     "dfs": DFS,
     "d*lite": DStarLite,
+    "jps": JPS,
+    "rrts": RRTs,
 }
 
 

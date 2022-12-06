@@ -23,6 +23,6 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonal: bool = False
             w = row[j]
             if w is None or w < 0:
                 w = INFINITY
-            g.add_node_by_position(i, j, w)
+            g.add_node_by_coord(i, j, w)
 
     return g

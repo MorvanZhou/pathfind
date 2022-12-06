@@ -7,67 +7,67 @@ from pathfind.graph.graph import Node, Grid, Direction
 
 
 def has_forced_neighbor(grid: Grid, node: Node, direction: Direction) -> bool:
-    row, col = grid.node_pos_map[node.name]
+    row, col = grid.node2coord[node.name]
     if direction == Direction.N:
         for delta in [-1, 1]:
-            if grid.location_blocked(row, col + delta) \
-                    and not grid.location_blocked(row - 1, col + delta):
+            if grid.coord_blocked(row, col + delta) \
+                    and not grid.coord_blocked(row - 1, col + delta):
                 return True
     elif direction == Direction.S:
         for delta in [-1, 1]:
-            if grid.location_blocked(row, col + delta) \
-                    and not grid.location_blocked(row + 1, col + delta):
+            if grid.coord_blocked(row, col + delta) \
+                    and not grid.coord_blocked(row + 1, col + delta):
                 return True
     elif direction == Direction.W:
         for delta in [-1, 1]:
-            if grid.location_blocked(row + delta, col) \
-                    and not grid.location_blocked(row + delta, col - 1):
+            if grid.coord_blocked(row + delta, col) \
+                    and not grid.coord_blocked(row + delta, col - 1):
                 return True
     elif direction == Direction.E:
         for delta in [-1, 1]:
-            if grid.location_blocked(row + delta, col) \
-                    and not grid.location_blocked(row + delta, col + 1):
+            if grid.coord_blocked(row + delta, col) \
+                    and not grid.coord_blocked(row + delta, col + 1):
                 return True
     elif direction == Direction.NW:
-        if grid.location_blocked(row, col + 1) \
-                and not grid.location_blocked(row - 1, col + 1):
+        if grid.coord_blocked(row, col + 1) \
+                and not grid.coord_blocked(row - 1, col + 1):
             return True
     elif direction == Direction.NE:
-        if grid.location_blocked(row, col - 1) \
-                and not grid.location_blocked(row - 1, col - 1):
+        if grid.coord_blocked(row, col - 1) \
+                and not grid.coord_blocked(row - 1, col - 1):
             return True
     elif direction == Direction.SW:
-        if grid.location_blocked(row, col + 1) \
-                and grid.location_blocked(row + 1, col + 1):
+        if grid.coord_blocked(row, col + 1) \
+                and grid.coord_blocked(row + 1, col + 1):
             return True
     elif direction == Direction.SE:
-        if grid.location_blocked(row, col - 1) \
-                and not grid.location_blocked(row + 1, col - 1):
+        if grid.coord_blocked(row, col - 1) \
+                and not grid.coord_blocked(row + 1, col - 1):
             return True
     return False
 
 
 def has_forced_orthogonal_neighbor(grid: Grid, node: Node, direction: Direction) -> bool:
-    row, col = grid.node_pos_map[node.name]
+    row, col = grid.node2coord[node.name]
     if direction == Direction.N:
         for delta in [-1, 1]:
-            if grid.location_blocked(row + 1, col + delta) \
-                    and not grid.location_blocked(row, col + delta):
+            if grid.coord_blocked(row + 1, col + delta) \
+                    and not grid.coord_blocked(row, col + delta):
                 return True
     elif direction == Direction.S:
         for delta in [-1, 1]:
-            if grid.location_blocked(row - 1, col + delta) \
-                    and not grid.location_blocked(row, col + delta):
+            if grid.coord_blocked(row - 1, col + delta) \
+                    and not grid.coord_blocked(row, col + delta):
                 return True
     elif direction == Direction.W:
         for delta in [-1, 1]:
-            if grid.location_blocked(row + delta, col + 1) \
-                    and not grid.location_blocked(row + delta, col):
+            if grid.coord_blocked(row + delta, col + 1) \
+                    and not grid.coord_blocked(row + delta, col):
                 return True
     elif direction == Direction.E:
         for delta in [-1, 1]:
-            if grid.location_blocked(row + delta, col - 1) \
-                    and not grid.location_blocked(row + delta, col):
+            if grid.coord_blocked(row + delta, col - 1) \
+                    and not grid.coord_blocked(row + delta, col):
                 return True
 
 
