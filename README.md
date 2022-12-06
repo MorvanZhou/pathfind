@@ -8,7 +8,7 @@ Implementation of path finding algorithms including:
 - Greedy Best-First Search
 - A\*
 - D\*-Lite
-- Jump Point Search (JPS) (running on maps with diagonal connection)
+- Jump Point Search (JPS)
 
 # Install
 
