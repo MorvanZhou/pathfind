@@ -128,7 +128,7 @@ class Graph:
 
         fig, ax = plt.subplots(figsize=(10, 10))
 
-        ig.show(
+        ig.plot(
             g,
             target=ax,
             layout=g.layout("auto"),
