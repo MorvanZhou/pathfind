@@ -9,8 +9,8 @@ def matrix2graph(matrix: tp.Sequence[tp.Sequence[float]], diagonal: bool = False
      road to this cell is not connected.
 
     Args:
-        matrix: 2D list for cost matrix
-        diagonal (bool): include diagonal path, default to False
+        matrix: 2D list for cost matrix. Values in cell represent the cost at this cell
+        diagonal (bool): include diagonal path, default to `False`
 
     Returns:
         Grid: graph data

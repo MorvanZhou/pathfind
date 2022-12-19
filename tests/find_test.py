@@ -50,3 +50,28 @@ class FindTest(unittest.TestCase):
 
         self.assertEqual({'3,1': 3.0, '4,2': 2.0}, next(get_cost))
         self.assertEqual({'2,1': 5.0, '3,2': 5.0}, next(get_cost))
+
+    def test_next_explore(self):
+        m = [
+            [1, 1, 1, 1, 1],
+            [1, 2, -1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [8, 3, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+        ]
+        g = pathfind.transform.matrix2graph(m)
+        f = pathfind.finder.AStar()
+        n = f.next(graph=g, start="4,0", end="0,0")
+        self.assertEqual("4,1", n)
+        n = f.next(graph=g, start=n, end="0,0")
+        self.assertEqual("3,1", n)
+        n = f.next(graph=g, start=n, end="0,0")
+        self.assertEqual("2,1", n)
+        n = f.next(graph=g, start=n, end="0,0")
+        self.assertEqual("2,0", n)
+        n = f.next(graph=g, start=n, end="0,0")
+        self.assertEqual("1,0", n)
+        n = f.next(graph=g, start=n, end="0,0")
+        self.assertEqual("0,0", n)
+        n = f.next(graph=g, start=n, end="0,0")
+        self.assertEqual("0,0", n)
