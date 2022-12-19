@@ -22,5 +22,33 @@ METHOD_MAP: tp.Dict[str, tp.Callable] = {
 
 
 def find(graph: Graph, start: str, end: str, method="a*") -> GraphPath:
+    """Explore the graph from start point, get a traceback dictionary at the end.
+
+    Args:
+        graph (Graph): graph
+        start (str): start node's name
+        end (str): end node's name
+        method (str): method name
+
+    Returns:
+        NodeTrace: a dictionary with key of node's name and value of :class:`~Node`, this is used for traceback
+    """
     finder: BaseFinder = METHOD_MAP[method.lower()]()
     return finder.find(graph, start, end)
+
+
+def next_move(graph: Graph, start: str, end: str, method="a*") -> str:
+    """
+    Next point to move on. This will compute complete path from start to end, then take the next point from start.
+
+    Args:
+        graph (Graph): graph
+        start (str): start node's name
+        end (str): end node's name
+        method (str): method name
+
+    Returns:
+        str: next node's name
+    """
+    finder: BaseFinder = METHOD_MAP[method.lower()]()
+    return finder.next(graph, start, end)
