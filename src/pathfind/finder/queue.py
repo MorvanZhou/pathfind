@@ -1,16 +1,14 @@
 __all__ = ["PriorityFinderQueue", "LifoFinderQueue", "FifoFinderQueue"]
 
+import heapq
 import typing as tp
 from abc import ABCMeta, abstractmethod
-from queue import PriorityQueue, Empty, LifoQueue, Queue
+from collections import deque
 
 from pathfind.graph.graph import Node
 
 
 class BaseQueue(metaclass=ABCMeta):
-    def __init__(self, q: Queue):
-        self.q: Queue = q
-
     @abstractmethod
     def put(self, item: Node, *args):
         pass
@@ -27,52 +25,45 @@ class BaseQueue(metaclass=ABCMeta):
     def clear(self):
         pass
 
-    def _clear(self):
-        while not self.q.empty():
-            try:
-                self.q.get(False)
-            except Empty:
-                continue
-            self.q.task_done()
-
 
 class FifoFinderQueue(BaseQueue):
     def __init__(self):
-        super().__init__(Queue())
+        self.q = deque()
 
     def put(self, item: Node, *args):
-        self.q.put(item)
+        self.q.append(item)
 
     def get(self) -> Node:
-        return self.q.get()
+        return self.q.popleft()
 
     def empty(self) -> bool:
-        return self.q.empty()
+        return len(self.q) == 0
 
     def clear(self):
-        self._clear()
+        self.q.clear()
 
 
 class LifoFinderQueue(BaseQueue):
     def __init__(self):
-        super().__init__(LifoQueue())
+        self.q = deque()
 
     def put(self, item: Node, *args):
-        self.q.put(item)
+        self.q.append(item)
 
     def get(self) -> Node:
-        return self.q.get()
+        return self.q.pop()
 
     def empty(self) -> bool:
-        return self.q.empty()
+        return len(self.q) == 0
 
     def clear(self):
-        self._clear()
+        self.q.clear()
 
 
 class PriorityFinderQueue(BaseQueue):
     def __init__(self):
-        super().__init__(PriorityQueue())
+        self.q = []
+        heapq.heapify([])
         self.nodes = {}
 
     def put(self, item: Node, *weight):
@@ -83,14 +74,16 @@ class PriorityFinderQueue(BaseQueue):
                 weights += list(w)
             else:
                 weights.append(w)
-        self.q.put((*weights, item.name))
+        heapq.heappush(self.q, (*weights, item.name))
 
     def get(self) -> Node:
-        node_name = self.q.get()[-1]
+        node_name = heapq.heappop(self.q)[-1]
         return self.nodes[node_name]
 
     def empty(self) -> bool:
-        return self.q.empty()
+        return len(self.q) == 0
 
     def clear(self):
+        self.q.clear()
         self.nodes.clear()
+        heapq.heapify(self.q)

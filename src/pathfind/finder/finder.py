@@ -5,6 +5,7 @@ from abc import ABCMeta, abstractmethod
 
 from pathfind.graph.edge import INFINITY
 from pathfind.graph.graph import Graph, Node
+from pathfind.graph.node import LinkedNode
 
 if tp.TYPE_CHECKING:
     from pathfind.finder.queue import BaseQueue
@@ -183,7 +184,7 @@ class BaseFinder(metaclass=ABCMeta):
         return nodes
 
     @staticmethod
-    def successors(node: Node):
+    def successors(node: Node) -> tp.Iterator[LinkedNode]:
         """
         Return a generator for getting all successors from this node
 
@@ -194,8 +195,7 @@ class BaseFinder(metaclass=ABCMeta):
             a generator for getting successor nodes
         """
         for edge in node.edges.values():
-            successor_with_weight = node.get_successor_with_weight(edge)
-            yield successor_with_weight
+            yield node.successors[edge.id]
 
     @staticmethod
     def predecessors(node: Node):

@@ -29,10 +29,7 @@ class LinkedNode:
 
     @property
     def weight(self):
-        if self.back:
-            return self.edge.back_weight
-        else:
-            return self.edge.weight
+        return self.edge.back_weight if self.back else self.edge.weight
 
 
 @dataclass
@@ -59,14 +56,6 @@ class Node:
             raise ValueError(f"edge does not include this {self.name}")
 
         self.edges[edge.id] = edge
-
-    def get_successor(self, edge: tp.Union[str, Edge]) -> Node:
-        return self.get_successor_with_weight(edge).node
-
-    def get_successor_with_weight(self, edge: tp.Union[str, Edge]) -> LinkedNode:
-        if not isinstance(edge, str):
-            edge = edge.id
-        return self.successors[edge]
 
     def get_all_successors(self) -> tp.List[Node]:
         return [ln.node for ln in self.successors.values()]

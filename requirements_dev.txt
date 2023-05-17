@@ -3,3 +3,4 @@ tox-conda
 build
 twine
 pylint
+line_profiler
