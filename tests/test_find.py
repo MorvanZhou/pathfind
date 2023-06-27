@@ -75,3 +75,31 @@ class FindTest(unittest.TestCase):
         self.assertEqual("0,0", n)
         n = f.next(graph=g, start=n, end="0,0")
         self.assertEqual("0,0", n)
+
+    def test_start_at_infinity(self):
+        m = [
+            [1, -1, 1, 1, 1],
+            [-1, -1, -1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [8, 3, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+        ]
+        g = pathfind.transform.matrix2graph(m)
+        for c in pathfind.finder.alg.METHOD_MAP.values():
+            f = c()
+            path = f.find(g, "0,1", "4,0")
+            self.assertEqual(0, len(path))
+
+    def test_no_path(self):
+        m = [
+            [1, -1, 1, 1, 1],
+            [-1, -1, -1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [8, 3, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+        ]
+        g = pathfind.transform.matrix2graph(m)
+        for c in pathfind.finder.alg.METHOD_MAP.values():
+            f = c()
+            path = f.find(g, "0,0", "4,0")
+            self.assertEqual(0, len(path))

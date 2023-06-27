@@ -142,6 +142,8 @@ class DStarLite(BaseFinder):
     def compute_shortest_path(self):
         while True:
             k_old, u = self.queue.top()
+            if u is None:
+                break
             k_new = self.key(u)
             g = self.g(u)
             rhs = self.rhs(u)

@@ -42,6 +42,8 @@ class BaseFinder(metaclass=ABCMeta):
         if start == end:
             return []
         explored = self.explore(graph, start, end)
+        if len(explored) == 0:
+            return []
         graph_path = self.traceback(explored)
         return graph_path
 

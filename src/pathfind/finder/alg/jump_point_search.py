@@ -3,7 +3,7 @@ import typing as tp
 from pathfind.finder import tool
 from pathfind.finder.finder import BaseFinder
 from pathfind.finder.queue import PriorityFinderQueue
-from pathfind.graph.graph import Node, Grid, Direction
+from pathfind.graph.graph import Node, Grid, Direction, INFINITY
 
 
 def has_forced_neighbor(grid: Grid, node: Node, direction: Direction) -> bool:
@@ -94,7 +94,8 @@ class JumpPointSearch(BaseFinder):
 
         while not self.queue.empty():
             src_node: Node = self.queue.get()
-
+            if src_node.weight == INFINITY:
+                return
             # expand src node
             visited.add(src_node.name)
             if graph.has_diagonal:
