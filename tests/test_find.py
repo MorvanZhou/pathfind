@@ -90,6 +90,20 @@ class FindTest(unittest.TestCase):
             path = f.find(g, "0,1", "4,0")
             self.assertEqual(0, len(path))
 
+    def test_end_at_infinity(self):
+        m = [
+            [1, -1, 1, 1, 1],
+            [-1, -1, -1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [8, 3, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+        ]
+        g = pathfind.transform.matrix2graph(m)
+        for c in pathfind.finder.alg.METHOD_MAP.values():
+            f = c()
+            path = f.find(g, "4,0", "0,1")
+            self.assertEqual(0, len(path))
+
     def test_no_path(self):
         m = [
             [1, -1, 1, 1, 1],
