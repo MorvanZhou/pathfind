@@ -29,12 +29,14 @@ class BaseQueue(metaclass=ABCMeta):
 class FifoFinderQueue(BaseQueue):
     def __init__(self):
         self.q = deque()
+        self.q_append = self.q.append
+        self.q_popleft = self.q.popleft
 
     def put(self, item: Node, *args):
-        self.q.append(item)
+        self.q_append(item)
 
     def get(self) -> Node:
-        return self.q.popleft()
+        return self.q_popleft()
 
     def empty(self) -> bool:
         return len(self.q) == 0
@@ -46,12 +48,14 @@ class FifoFinderQueue(BaseQueue):
 class LifoFinderQueue(BaseQueue):
     def __init__(self):
         self.q = deque()
+        self.q_append = self.q.append
+        self.q_pop = self.q.pop
 
     def put(self, item: Node, *args):
-        self.q.append(item)
+        self.q_append(item)
 
     def get(self) -> Node:
-        return self.q.pop()
+        return self.q_pop()
 
     def empty(self) -> bool:
         return len(self.q) == 0
@@ -69,11 +73,13 @@ class PriorityFinderQueue(BaseQueue):
     def put(self, item: Node, *weight):
         self.nodes[item.name] = item
         weights = []
+        w_append = weights.append
+        w_extend = weights.extend
         for w in weight:
             if isinstance(w, (list, tuple)):
-                weights += list(w)
+                w_extend(list(w))
             else:
-                weights.append(w)
+                w_append(w)
         heapq.heappush(self.q, (*weights, item.name))
 
     def get(self) -> Node:

@@ -3,8 +3,8 @@ from __future__ import annotations
 import heapq
 import typing as tp
 
-from pathfind.finder import tool
-from pathfind.finder.finder import BaseFinder, NodeTrace
+from pathfind.finder.finder import BaseFinder, GMap
+from pathfind.finder.tool import DISTANCE_MAP
 from pathfind.graph import Node, Graph, INFINITY
 
 Key = tp.Tuple[float, float]
@@ -17,21 +17,24 @@ class DStarQueue:
         self.pq = []
         self.nodes: tp.Dict[str, Node] = {}
         self.entry_finder: tp.Dict[str, tp.Any] = {}
+        self.nodes_pop = self.nodes.pop
+        self.entry_finder_pop = self.entry_finder.pop
 
-    def insert(self, u: Node, key: Key):
-        if u.name in self.entry_finder:
+    def update(self, u: Node, key: Key):
+        u_name = u.name
+        if u_name in self.entry_finder:
             self.remove(u)
-        entry = [key[0], key[1], u.name]
-        self.entry_finder[u.name] = entry
+        entry = [key[0], key[1], u_name]
+        self.entry_finder[u_name] = entry
         heapq.heappush(self.pq, entry)
-        self.nodes[u.name] = u
+        self.nodes[u_name] = u
 
     def top(self) -> tp.Tuple[tp.Tuple[float, float], tp.Optional[Node]]:
         while self.pq:
             k0, k1, name = heapq.heappop(self.pq)
             if name is not self.REMOVED:
                 del self.entry_finder[name]
-                return (k0, k1), self.nodes.pop(name)
+                return (k0, k1), self.nodes_pop(name)
         return (INFINITY, INFINITY), None
         # self.pq.sort()
         # if len(self.pq) > 0:
@@ -40,13 +43,10 @@ class DStarQueue:
         # else:
         #     return (INFINITY, INFINITY), None
 
-    def update(self, u: Node, key: Key):
-        self.insert(u, key)
-
     def remove(self, item: Node):
-        entry = self.entry_finder.pop(item.name)
+        entry = self.entry_finder_pop(item.name)
         entry[-1] = self.REMOVED
-        self.nodes.pop(item.name)
+        self.nodes_pop(item.name)
 
     def has(self, item: Node):
         return item.name in self.entry_finder
@@ -63,7 +63,7 @@ class DStarLite(BaseFinder):
         super().__init__()
         self.queue = DStarQueue()
         self.km = 0
-        self.distance_method = distance
+        self.distance_method = DISTANCE_MAP[distance]
         self._rhs: tp.Dict[str, float] = {}
         self._g: tp.Dict[str, float] = {}
         self._edge_cost: tp.Dict[(str, str), float] = {}
@@ -81,14 +81,18 @@ class DStarLite(BaseFinder):
             self.save_edge_cost(edge.node2, edge.node1, edge.back_weight)
 
         self.set_rhs(self.end, 0.)
-        key = self.h(self.end), 0
-        self.queue.insert(self.end, key)
+        key = self.distance_method(self.start, self.end), 0
+        self.queue.update(self.end, key)
 
     def key(self, node: Node) -> tp.Tuple[float, float]:
-        min_g_rhs = min(self.g(node), self.rhs(node))
-        return min_g_rhs + self.h(node) + self.km, min_g_rhs
+        try:
+            g = self._g[node.name]
+        except KeyError:
+            g = self._g[node.name] = INFINITY
+        min_g_rhs = min(g, self.rhs(node))
+        return min_g_rhs + self.distance_method(self.start, node) + self.km, min_g_rhs
 
-    def iter_explore(self, graph: Graph, start: str, end: str) -> NodeTrace:
+    def iter_explore(self, graph: Graph, start: str, end: str, return_cost: bool = False) -> tp.Optional[GMap]:
         self.initialize(graph, start, end)
         self.compute_shortest_path()
         last = self.start
@@ -99,30 +103,38 @@ class DStarLite(BaseFinder):
                 return {}
             min_cost = INFINITY
             next_node = None
-            for s in self.successors(self.start):
-                cost = s.weight + self.g(s.node)
+            successors = self.start.successors
+            for edge in self.start.edges.values():
+                s = successors[edge.id]
+                cost = s.weight + self._g[s.node.name]
                 if cost < min_cost:
                     next_node = s.node
                     min_cost = cost
 
             self.came_from[next_node.name] = self.start
             self.start = next_node
-            yield {k: self._g[k] for k, v in self._g.items() if new_g.get(k, None) != v}
-            new_g.update(self._g)
+            if return_cost:
+                return_c = {k: self._g[k] for k, v in self._g.items() if new_g.get(k, None) != v}
+                new_g.update(self._g)
+            else:
+                return_c = None
+            yield return_c
 
             changed = False
-            for s in self.successors(self.start):
+            successors = self.start.successors
+            for edge in self.start.edges.values():
+                s = successors[edge.id]
                 # check weight change
                 c_old = self.get_edge_cost(self.start, s.node)
                 if s.weight != c_old:
                     changed = True
-                    self.km += self._heuristic(last, self.start)
+                    self.km += self.distance_method(last, self.start)
                     last = self.start
                     self.save_edge_cost(self.start, s.node, s.weight)
                     if c_old > s.weight:
                         if self.start is not self.end:
-                            self.set_rhs(self.start, min(self.rhs(self.start), s.weight + self.g(s.node)))
-                    elif self.rhs(self.start) == c_old + self.g(s.node):
+                            self.set_rhs(self.start, min(self.rhs(self.start), s.weight + self._g[s.node.name]))
+                    elif self.rhs(self.start) == c_old + self._g[s.node.name]:
                         if self.start is not self.end:
                             self.renew_rhs(self.start)
                     self.update_node(self.start)
@@ -130,12 +142,16 @@ class DStarLite(BaseFinder):
                 self.compute_shortest_path()
 
     def update_node(self, u: Node):
-        g_equal_rhs = self.g(u) == self.rhs(u)
+        try:
+            g = self._g[u.name]
+        except KeyError:
+            g = self._g[u.name] = INFINITY
+        g_equal_rhs = g == self.rhs(u)
         has_node = self.queue.has(u)
         if not g_equal_rhs and has_node:
             self.queue.update(u, self.key(u))
         elif not g_equal_rhs and not has_node:
-            self.queue.insert(u, self.key(u))
+            self.queue.update(u, self.key(u))
         elif g_equal_rhs and has_node:
             self.queue.remove(u)
 
@@ -145,27 +161,30 @@ class DStarLite(BaseFinder):
             if u is None:
                 break
             k_new = self.key(u)
-            g = self.g(u)
+            u_name = u.name
+            g = self._g[u_name]
             rhs = self.rhs(u)
             if k_old < k_new:
                 self.queue.update(u, k_new)
             elif g > rhs:
-                self.set_g(u, rhs)
+                self._g[u_name] = rhs  # set g
                 # self.queue.remove(u)  # removed when doing self.queue.top()
-                for s in self.predecessors(u):
+                for edge in u.edges.values():
+                    s = u.get_predecessor_with_weight(edge)
                     if s.node is not self.end:
-                        self.set_rhs(s.node, min(self.rhs(s.node), s.weight + self.g(u)))
+                        self.set_rhs(s.node, min(self.rhs(s.node), s.weight + self._g[u_name]))
                     self.update_node(s.node)
             else:
                 g_old = g
-                self.set_g(u, INFINITY)
-                self.queue.insert(u, k_old)  # add back after self.queue.top()
-                for s in self.predecessors(u):
+                self._g[u_name] = INFINITY  # set g
+                self.queue.update(u, k_old)  # add back after self.queue.top()
+                for edge in u.edges.values():
+                    s = u.get_predecessor_with_weight(edge)
                     if self.rhs(s.node) == s.weight + g_old:
                         if s.node is not self.end:
                             self.renew_rhs(s.node)
                     self.update_node(s.node)
-            if not (k_old < self.key(self.start) or self.rhs(self.start) > self.g(self.start)):
+            if not (k_old < self.key(self.start) or self.rhs(self.start) > self._g[self.start.name]):
                 break
 
     def save_edge_cost(self, n1: Node, n2: Node, c: float):
@@ -177,19 +196,15 @@ class DStarLite(BaseFinder):
     def check_neighbors(self, current: Node):
         raise NotImplemented
 
-    def heuristic(self, node: Node) -> float:
-        return self._heuristic(self.start, node)
-
-    def _heuristic(self, n1: Node, n2: Node) -> float:
-        return tool.distance(n1, n2, self.distance_method)
-
     def set_rhs(self, node: Node, rhs: float):
         self._rhs[node.name] = rhs
 
     def renew_rhs(self, node: Node):
         rhs = INFINITY
-        for neighbor in self.successors(node):
-            n_rhs = neighbor.weight + self.g(neighbor.node)
+        successors = node.successors
+        for edge in node.edges.values():
+            successor = successors[edge.id]
+            n_rhs = successor.weight + self._g[successor.node.name]
             if n_rhs < rhs:
                 rhs = n_rhs
         self.set_rhs(node, rhs)

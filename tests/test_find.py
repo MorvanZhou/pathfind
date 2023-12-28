@@ -45,7 +45,7 @@ class FindTest(unittest.TestCase):
         ]
         g = pathfind.transform.matrix2graph(m)
         f = pathfind.finder.AStar()
-        get_cost = f.iter_explore(graph=g, start="4,0", end="0,0")
+        get_cost = f.iter_explore(graph=g, start="4,0", end="0,0", return_cost=True)
         self.assertEqual({'4,0': 0, '3,0': 4.5, '4,1': 1.0}, next(get_cost))
 
         self.assertEqual({'3,1': 3.0, '4,2': 2.0}, next(get_cost))

@@ -10,15 +10,20 @@ class AStar(GreedyBestFirst):
         self.k = k
 
     def check_neighbors(self, current: Node):
-        for neighbor in self.successors(current):
-            n = neighbor.node
-            if neighbor.weight == INFINITY:
+        successors = current.successors
+        for edge in current.edges.values():
+            successor = successors[edge.id]
+            if successor.weight == INFINITY:
                 continue
-            g = self.g(current) + neighbor.weight
-            if not self.is_visited(n) or g < self.g(n):
-                self.set_g(n, g)
+
+            g = self._g[current.name] + successor.weight
+            n = successor.node
+            # not visited or new g is smaller
+            n_name = n.name
+            if n_name not in self._g or g < self._g[n_name]:
+                self._g[n_name] = g  # set g
                 f = g  # priority
                 if self.k > 0:
-                    f += self.k * self.h(n)
+                    f += self.k * self.distance_method(n, self.end)
                 self.queue.put(n, f, g)  # same f = g + h, then sort g
-                self.came_from[n.name] = current
+                self.came_from[n_name] = current

@@ -1,8 +1,8 @@
 import typing as tp
 
-from pathfind.finder import tool
-from pathfind.finder.finder import BaseFinder
+from pathfind.finder.finder import BaseFinder, GMap
 from pathfind.finder.queue import PriorityFinderQueue
+from pathfind.finder.tool import DISTANCE_MAP
 from pathfind.graph.graph import Node, Grid, Direction, INFINITY
 
 
@@ -78,9 +78,9 @@ class JumpPointSearch(BaseFinder):
         self.non_diagonal_directions = [Direction.N, Direction.W, Direction.S, Direction.E]
         self.ns_directions = [Direction.N, Direction.S]
         self.ew_directions = [Direction.E, Direction.W]
-        self.distance_method = distance
+        self.distance_method = DISTANCE_MAP[distance]
 
-    def iter_explore(self, graph: Grid, start: str, end: str):
+    def iter_explore(self, graph: Grid, start: str, end: str, return_cost: bool = False) -> tp.Optional[GMap]:
         if not isinstance(graph, Grid):
             raise TypeError(
                 "graph must by Grid. Use pathfind.transform.matrix2graph(map, diagonal=True) to convert your map."
@@ -89,7 +89,7 @@ class JumpPointSearch(BaseFinder):
         self.start = self.init_start = graph.nodes[start]
         self.end = self.init_end = graph.nodes[end]
 
-        self.queue.put(self.start, self.heuristic(self.start))
+        self.queue.put(self.start, self.distance_method(self.start, self.end))
         visited = set()
 
         while not self.queue.empty():
@@ -149,7 +149,7 @@ class JumpPointSearch(BaseFinder):
         self.came_from[n_.name] = node
         visited.add(n_.name)
         if has_forced_orthogonal_neighbor(graph, node=n_, direction=direction):
-            self.queue.put(n_, self.heuristic(n_))
+            self.queue.put(n_, self.distance_method(n_, self.end))
             return None
         return n_
 
@@ -196,15 +196,12 @@ class JumpPointSearch(BaseFinder):
         self.came_from[n_.name] = node
         visited.add(n_.name)
         if has_forced_neighbor(graph, node=n_, direction=direction):
-            self.queue.put(n_, self.heuristic(n_))
+            self.queue.put(n_, self.distance_method(n_, self.end))
             return None
         return n_
 
     def check_neighbors(self, current: Node):
         raise NotImplemented
-
-    def heuristic(self, node: Node) -> float:
-        return tool.distance(node, self.end, self.distance_method)
 
 
 class JPS(JumpPointSearch):

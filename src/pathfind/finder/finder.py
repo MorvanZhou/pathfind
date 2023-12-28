@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import typing as tp
 from abc import ABCMeta, abstractmethod
+from collections import deque
 
-from pathfind.graph.edge import INFINITY
 from pathfind.graph.graph import Graph, Node
-from pathfind.graph.node import LinkedNode
 
 if tp.TYPE_CHECKING:
     from pathfind.finder.queue import BaseQueue
@@ -60,12 +59,11 @@ class BaseFinder(metaclass=ABCMeta):
             NodeTrace: a dictionary with key of node's name and value of :class:`~Node`, this is used for traceback
         """
         # clear when redoing search
-        e = self.iter_explore(graph, start, end)
-        for _ in e:
-            pass
+        deque(self.iter_explore(graph, start, end), maxlen=0)
+
         return self.came_from
 
-    def iter_explore(self, graph: Graph, start: str, end: str) -> tp.Optional[GMap]:
+    def iter_explore(self, graph: Graph, start: str, end: str, return_cost: bool = False) -> tp.Optional[GMap]:
         """
         Iterate exploring the graph. Return a generator. Please use it in a loop.
 
@@ -73,6 +71,7 @@ class BaseFinder(metaclass=ABCMeta):
             graph (Graph): graph
             start (str): start node's name
             end (str): end node's name
+            return_cost (bool): whether to return cost
 
         Returns:
             GMap: a dictionary of node's name and its cost
@@ -84,7 +83,7 @@ class BaseFinder(metaclass=ABCMeta):
         self.end = self.init_end = graph.nodes[end]
 
         self.queue.put(self.start, 0)
-        self.set_g(self.start, 0)
+        self._g[self.start.name] = 0
         new_g = {}
 
         while not self.queue.empty():
@@ -92,8 +91,12 @@ class BaseFinder(metaclass=ABCMeta):
             if current is self.end:
                 break
             self.check_neighbors(current)
-            yield {k: self._g[k] for k in self._g.keys() - new_g}
-            new_g.update(self._g)
+            if return_cost:
+                cost = {k: self._g[k] for k in self._g.keys() - new_g}
+                new_g.update(self._g)
+            else:
+                cost = None
+            yield cost
 
     def next(self, graph: Graph, start: str, end: str) -> str:
         """
@@ -116,53 +119,6 @@ class BaseFinder(metaclass=ABCMeta):
     def check_neighbors(self, current: Node):
         pass
 
-    def set_g(self, node: Node, g: tp.Optional[float] = None):
-        if g is None:
-            g = -1
-        self._g[node.name] = g
-
-    def g(self, node: Node) -> float:
-        """
-        Get node's g value. A different g definition for different path finding algorithm. Normally it is a node's cost.
-
-        Args:
-            node (Node): graph node
-
-        Returns:
-            float: g value
-        """
-        try:
-            return self._g[node.name]
-        except KeyError:
-            self._g[node.name] = INFINITY
-            return self._g[node.name]
-
-    def heuristic(self, node: Node) -> float:
-        """
-        Get heuristic value for this node
-
-        Args:
-            node (Node): graph node
-
-        Returns:
-            float: heuristic value for this node
-        """
-        return 0.
-
-    def h(self, node: Node) -> float:
-        """Short for heuristic value
-
-        Args:
-            node (Node): graph node
-
-        Returns:
-            float: heuristic value for this node
-        """
-        return self.heuristic(node)
-
-    def is_visited(self, node: Node) -> bool:
-        return node.name in self._g
-
     def traceback(self, explored: NodeTrace) -> GraphPath:
         """
         Traceback and get the shortest path from NodeTrace
@@ -184,35 +140,6 @@ class BaseFinder(metaclass=ABCMeta):
                 break
             trace_start_name = parent_node.name
         return nodes
-
-    @staticmethod
-    def successors(node: Node) -> tp.Iterator[LinkedNode]:
-        """
-        Return a generator for getting all successors from this node
-
-        Args:
-            node (Node): node
-
-        Returns:
-            a generator for getting successor nodes
-        """
-        for edge in node.edges.values():
-            yield node.successors[edge.id]
-
-    @staticmethod
-    def predecessors(node: Node):
-        """
-        Return a generator for getting all predecessors from this node
-
-        Args:
-            node (Node): node
-
-        Returns:
-            a generator for getting successor nodes
-        """
-        for edge in node.edges.values():
-            predecessor_with_weight = node.get_predecessor_with_weight(edge)
-            yield predecessor_with_weight
 
     def clear(self):
         if self.queue is not None:

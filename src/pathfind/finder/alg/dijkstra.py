@@ -8,12 +8,16 @@ class Dijkstra(BaseFinder):
         super().__init__(PriorityFinderQueue())
 
     def check_neighbors(self, current: Node):
-        for neighbor in self.successors(current):
-            n = neighbor.node
-            if neighbor.weight == INFINITY:
+        for edge in current.edges.values():
+            successor = current.successors[edge.id]
+            if successor.weight == INFINITY:
                 continue
-            g = self.g(current) + neighbor.weight
-            if not self.is_visited(n) or g < self.g(n):
-                self.set_g(n, g)
+            g = self._g[current.name] + successor.weight
+            n = successor.node
+
+            # not visited or new g is smaller
+            n_name = n.name
+            if n_name not in self._g or g < self._g[n_name]:
+                self._g[n_name] = g  # set g
                 self.queue.put(n, g)
-                self.came_from[n.name] = current
+                self.came_from[n_name] = current

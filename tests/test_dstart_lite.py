@@ -19,7 +19,7 @@ class DStarLiteTest(unittest.TestCase):
         start = expected_path[0]
         f = pathfind.finder.DStarLite()
         i = 0
-        for new_g in f.iter_explore(self.g, start, "G"):
+        for new_g in f.iter_explore(self.g, start, "G", return_cost=True):
             if i == 0:
                 self.assertEqual({'G': 0.0, 'C': 1.0, 'A': 3.0, 'B': 2.0, 'D': pathfind.INFINITY}, new_g)
             else:
@@ -33,7 +33,7 @@ class DStarLiteTest(unittest.TestCase):
         expected_path = ["A", "B", "D", "G"]
         start = expected_path[0]
         f = pathfind.finder.DStarLite()
-        for i, new_g in enumerate(f.iter_explore(self.g, start, "G")):
+        for i, new_g in enumerate(f.iter_explore(self.g, start, "G", return_cost=True)):
             if i == 0:
                 self.assertEqual({'G': 0.0, 'C': 1.0, 'A': 3.0, 'B': 2.0, 'D': pathfind.INFINITY}, new_g)
                 self.g.edges["C:G"].set_weight(float("inf"), 10)

@@ -23,6 +23,7 @@ def _reset_global_name_count():
 
 @dataclass
 class LinkedNode:
+    __slots__ = ["node", "edge", "back"]
     node: Node
     edge: Edge
     back: bool

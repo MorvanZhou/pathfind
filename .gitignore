@@ -3,3 +3,4 @@
 /dist
 /.tox
 /src/pathfind.egg-info
+/tmp

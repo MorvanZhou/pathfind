@@ -9,14 +9,18 @@ class DepthFirstSearch(BaseFinder):
         super().__init__(LifoFinderQueue())
 
     def check_neighbors(self, current: Node):
-        for neighbor in self.successors(current):
-            n = neighbor.node
-            if neighbor.weight == INFINITY:
+        successors = current.successors
+        for edge in current.edges.values():
+            successor = successors[edge.id]
+            if successor.weight == INFINITY:
                 continue
-            if not self.is_visited(n):
-                self.set_g(n)
+            n = successor.node
+            # if not visited
+            n_name = n.name
+            if n_name not in self._g:
+                self._g[n_name] = -1  # set g to -1 to mark visited
                 self.queue.put(n)
-                self.came_from[n.name] = current
+                self.came_from[n_name] = current
 
 
 class DFS(DepthFirstSearch):
