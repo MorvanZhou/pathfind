@@ -1,5 +1,14 @@
 # PathFind
 
+[![Unittest](https://github.com/MorvanZhou/pathfind/actions/workflows/python-package.yml/badge.svg)](https://github.com/MorvanZhou/pathfind/actions/workflows/python-package.yml)
+[![License](https://img.shields.io/github/license/MorvanZhou/pathfind)](https://github.com/MorvanZhou/pathfind/blob/master/LICENSE)
+<a href="https://pypi.org/project/pathfind" target="_blank">
+<img src="https://img.shields.io/pypi/v/pathfind?color=%2334D058&label=pypi%20package" alt="Package version">
+</a>
+<a href="https://pypi.org/project/pathfind" target="_blank">
+<img src="https://img.shields.io/pypi/pyversions/pathfind.svg?color=%2334D058" alt="Supported Python versions">
+</a>
+
 Implementation of path finding algorithms including:
 
 - Depth-First Search (DFS)
