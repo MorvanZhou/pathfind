@@ -36,8 +36,8 @@ class DStarLiteTest(unittest.TestCase):
         for i, new_g in enumerate(f.iter_explore(self.g, start, "G", return_cost=True)):
             if i == 0:
                 self.assertEqual({'G': 0.0, 'C': 1.0, 'A': 3.0, 'B': 2.0, 'D': pathfind.INFINITY}, new_g)
-                self.g.edges["C:G"].set_weight(float("inf"), 10)
-                self.g.edges["B:C"].set_weight(float("inf"), 10)
+                self.g.edges["C:G"].set_route_weight(float("inf"), 10)
+                self.g.edges["B:C"].set_route_weight(float("inf"), 10)
             elif i == 1:
                 self.assertEqual({'D': 10.0, 'A': pathfind.INFINITY, 'B': 11.0}, new_g)
             else:

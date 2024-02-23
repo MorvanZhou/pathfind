@@ -9,9 +9,13 @@ import matplotlib.pyplot as plt
 
 from pathfind.graph.edge import Edge, get_edge_id, INFINITY
 from pathfind.graph.node import Node
+from pathfind.graph.portable import Portable, all_portables
 
 
 class Graph:
+    # things that can be moved
+    portable_node_map: tp.Dict[str, Node] = {}
+
     def __init__(self, conf: tp.Optional[tp.Sequence[tp.Sequence]] = None):
         self.nodes: tp.Dict[str, Node] = {}
         self.edges: tp.Dict[str, Edge] = {}
@@ -43,7 +47,7 @@ class Graph:
                 w_back = edge_data[3]
             except IndexError:
                 w_back = w
-            self.add_edge(Edge(node1=n1, node2=n2, weight=w, back_weight=w_back))
+            self.add_edge(Edge(node1=n1, node2=n2, route_weight=w, back_route_weight=w_back))
 
     def add(self, edge: Edge):
         self.add_edge(edge)
@@ -98,6 +102,36 @@ class Graph:
 
     def remove_edge(self, edge: Edge):
         self.remove_edge_by_name(edge.id)
+
+    def add_portable(self, node_name: str, portable: Portable):
+        if node_name not in self.nodes:
+            raise ValueError(f"node name '{node_name}' not found")
+        if portable.name in self.portable_node_map:
+            raise ValueError(f"portable of name '{portable.name}' already exists")
+
+        n = self.nodes[node_name]
+        n.add_portable(portable)
+        self.portable_node_map[portable.name] = n
+
+    def remove_portable(self, portable: Portable):
+        try:
+            n = self.portable_node_map.pop(portable.name)
+        except KeyError:
+            raise ValueError(f"portable of name '{portable.name}' not found")
+        n.remove_portable(portable)
+
+    def move_portable(self, portable: Portable, new_node_name: str):
+        if portable.name not in self.portable_node_map:
+            raise ValueError(f"portable of name '{portable.name}' not found")
+        if new_node_name not in self.nodes:
+            raise ValueError(f"node name '{new_node_name}' not found")
+        self.remove_portable(portable)
+        self.add_portable(new_node_name, portable)
+
+    def remove_all_portable(self):
+        for pid in list(self.portable_node_map.keys()):
+            p = all_portables[pid]
+            self.remove_portable(p)
 
     def plot(self, trace: tp.Optional[tp.Sequence[str]] = None):
         g = ig.Graph(directed=False)
@@ -250,7 +284,7 @@ class Grid(Graph):
                 w = math.sqrt(node.weight ** 2 + n2.weight ** 2)
                 to_be_added.append([n2, w])
         for n2 in to_be_added:
-            e = Edge(node1=node, node2=n2[0], weight=n2[1], back_weight=n2[1])
+            e = Edge(node1=node, node2=n2[0], route_weight=n2[1], back_route_weight=n2[1])
             self.edges[e.id] = e
 
     def get_node_by_coord(self, row: int, col: int):
@@ -280,3 +314,4 @@ class Grid(Graph):
         if row < 0 or col < 0 or row >= self.height or col >= self.width:
             return True
         return self.grid[row][col].weight == INFINITY
+

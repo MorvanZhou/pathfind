@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 
 if tp.TYPE_CHECKING:
     from pathfind.graph.edge import Edge
+    from pathfind.graph.portable import Portable
 
 _GLOBAL_NAME_COUNT = 0
 
@@ -41,6 +42,7 @@ class Node:
     predecessors: tp.Dict[str, LinkedNode] = field(default_factory=dict)
     position: tp.Sequence[float] = field(default_factory=tuple)
     weight: float = field(default=0)
+    portables: tp.Dict[str, Portable] = field(default_factory=dict)
 
     def link(self, edge: Edge):
         if edge.node1 is self:
@@ -77,6 +79,15 @@ class Node:
 
     def get_all_predecessors_with_weight(self) -> tp.List[LinkedNode]:
         return list(self.predecessors.values())
+
+    def add_portable(self, portable: Portable):
+        self.portables[portable.name] = portable
+
+    def remove_portable(self, portable: Portable):
+        self.portables.pop(portable.name)
+
+    def remove_all_portables(self):
+        self.portables.clear()
 
     @property
     def neighbors(self) -> tp.List[Node]:
