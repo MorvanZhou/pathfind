@@ -8,6 +8,7 @@ def iter_id():
         yield f"{prefix}{i}"
         i += 1
 
+id_iteration = iter_id()
 
 all_portables = {}
 
@@ -19,7 +20,7 @@ class Portable:
 
     def __post_init__(self):
         if self.name is None:
-            self.name = next(iter_id())
+            self.name = next(id_iteration)
         if self.name in all_portables:
             raise ValueError(f"Portable id {self.name} already exists")
         all_portables[self.name] = self
@@ -31,3 +32,8 @@ def get_portable(name: str) -> Portable:
 
 def del_portable(name: str):
     del all_portables[name]
+
+
+if __name__ == "__main__":
+    for i in range(10):
+        print(Portable(weight=i).name)

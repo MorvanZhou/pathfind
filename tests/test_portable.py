@@ -14,6 +14,10 @@ class PortableTest(unittest.TestCase):
 
         p1 = pathfind.Portable(weight=1, name="p1")
         p2 = pathfind.Portable(weight=2, name="p2")
+        p3 = pathfind.Portable(weight=3)
+        p4 = pathfind.Portable(weight=4)
+        self.assertEqual("p_0", p3.name)
+        self.assertEqual("p_1", p4.name)
 
         g.add_portable(node_name="n1", portable=p1)
         g.add_portable(node_name="n2", portable=p2)
