@@ -27,3 +27,7 @@ class Portable:
 
 def get_portable(name: str) -> Portable:
     return all_portables[name]
+
+
+def del_portable(name: str):
+    del all_portables[name]
